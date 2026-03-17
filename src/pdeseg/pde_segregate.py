@@ -371,7 +371,8 @@ class PDE_Segregate():
 
     def plot_overlapAreas(
             self, feat_idx, feat_names=None, _combinations=None,
-            show_samples=False, legend=False, legend_fIndex=None, _ax=None
+            intersection_area=True, show_samples=False, legend=False,
+            legend_fIndex=None, _ax=None
     ):
         """
         Function to plot intersection areas for a given feature.
@@ -389,6 +390,9 @@ class PDE_Segregate():
          - Tuple of which classes to consider when plotting the
            intersection area. If None, then plots intersection area
            between all KDEs (k=number of class).
+
+        intersection_area : bool
+         - If True, plot shaded intersection area (k=total number of classes)
 
         show_samples : bool
          - If True, show samples that make up the KDEs as short vertical lines.
@@ -499,23 +503,27 @@ class PDE_Segregate():
 
                 _label = r"$A_{" + _label_underscript + r"}=$"
                 _label += str(round(OA, 3))
-                fill_poly = _ax.fill_between(
-                    self.grids[feat_idx], 0, yIntersection, label=_label,
-                    color="lightgray", edgecolor="lavender"
-                )
+
+                if intersection_area:
+                    fill_poly = _ax.fill_between(
+                        self.grids[feat_idx], 0, yIntersection, label=_label,
+                        color="lightgray", edgecolor="lavender"
+                    )
             else:
+                if intersection_area:
+                    fill_poly = _ax.fill_between(
+                        self.grids[feat_idx], 0, yIntersection,
+                        color="lightgray", edgecolor="lavender"
+                    )
+            _ax.legend()
+        else:
+            if intersection_area:
                 fill_poly = _ax.fill_between(
                     self.grids[feat_idx], 0, yIntersection,
                     color="lightgray", edgecolor="lavender"
                 )
-            _ax.legend()
-        else:
-            fill_poly = _ax.fill_between(
-                self.grids[feat_idx], 0, yIntersection,
-                color="lightgray", edgecolor="lavender"
-            )
-
-        fill_poly.set_hatch('xxx')
+        if intersection_area:
+            fill_poly.set_hatch('xxx')
 
         if not feat_names is None:
             _ax.set_xlabel(feat_names[feat_idx], fontsize='large')
