@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="https://github.com/RenZhen95/prod-fs/blob/main/docs/artwork/logo.svg" width="300">
-</p>
-
-**ProD**, a visualizable filter-feature selection method based on "prodding" the class <ins>Pro</ins>bability <ins>D</ins>ensities for overlapping.
+# **ProD**, a visualizable filter-feature selection method based on "prodding" the class <ins>Pro</ins>bability <ins>D</ins>ensities for overlapping.
 
 ## Install
 ProD can be installed from PyPI:
