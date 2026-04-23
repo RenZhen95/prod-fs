@@ -1,6 +1,6 @@
 [project]
 name = "prodfs"
-version = "1.0.0"
+version = "1.0.1"
 description = "ProD: A visualizable filter-feature selection method based on prodding the class probability densities for overlapping"
 readme = "README.md"
 authors = [
