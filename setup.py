@@ -4,7 +4,7 @@ with open("README.md", 'r', encoding="utf8") as handle:
     description = handle.read()
 
 setup(
-    name='pdeseg',
+    name='prodfs',
     version='0.1',
     packages=find_packages(),
     install_requires=[

@@ -5,7 +5,7 @@ from collections import defaultdict
 from scipy.stats import gaussian_kde
 from joblib import Parallel, delayed
 
-class PDE_Segregate():
+class ProD():
     def __init__(
             self, integration_method="trapz", delta=500,
             bw_method="scott", k=2, n_jobs=1,
@@ -120,7 +120,7 @@ class PDE_Segregate():
             rightGrid = np.arange(1.0, self.rightEnd, self.grid_width)
             self.XGrid = np.concatenate((self.XGrid, rightGrid))
 
-        # Do not allow user to use PDE-Segregate, when class has only one sample
+        # Do not allow user to use ProD, when class has only one sample
         yToRemove = []
         for y in self.y_segregatedGroup.keys():
             if self.y_segregatedGroup[y].shape[0] == 1:

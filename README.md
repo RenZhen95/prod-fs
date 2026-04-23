@@ -1,18 +1,18 @@
-<p align="center">
-  <img src="https://github.com/RenZhen95/PDE-Segregate/blob/main/docs/artwork/logo.svg" width="300">
+y<p align="center">
+  <img src="https://github.com/RenZhen95/prod-fs/blob/main/docs/artwork/logo.svg" width="300">
 </p>
 
-**PDE-Seg (PDE-Segregate)** is a univariate filter feature selection method based on a filter-measure that ranks features according to their ability to segregate the probability density estimates (PDE) of the class samples.
+**ProD**, a visualizable filter-feature selection method based on "prodding" the class <ins>Pro</ins>bability <ins>D</ins>ensities for overlapping.
 
 ## Install
-PDE-Seg can be installed from PyPI:
+ProD can be installed from PyPI:
 <pre>
-pip install pdeseg
+pip install prod-fs
 </pre>
 
 ## Example
 ```python
-from pdeseg import PDE_Segregate
+from prodfs import ProD
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,24 +24,24 @@ X, y = make_classification(
     shuffle=False
 )
 
-# Initialize PDE-Segregate object
-pdeRanker = PDE_Segregate()
+# Initialize ProD object
+prodRanker = ProD()
 
 # Carry out feature selection
-pdeRanker.fit(X, y)
+prodRanker.fit(X, y)
 
 # Get top 10 features
-top10Features = pdeRanker.get_topnFeatures(10)
+top10Features = prodRanker.get_topnFeatures(10)
 
 # Visualize the top feature's ability to segregate PDEs
 fig, axs = plt.subplots(1, 2, sharey=True)
 
 # Top ranked feature
-pdeRanker.plot_overlapAreas(top10Features[0], legend="intersection", _ax=axs[0])
+prodRanker.plot_overlapAreas(top10Features[0], legend="intersection", _ax=axs[0])
 axs[0].set_title("Most relevant feature", loc="left")
 
 # Last ranked feature
-pdeRanker.plot_overlapAreas(49, legend="intersection", _ax=axs[1])
+prodRanker.plot_overlapAreas(49, legend="intersection", _ax=axs[1])
 axs[1].set_title("Least relevant feature", loc="left")
 
 axs[0].set_ylabel(r"Probability Density, $\hat{P}$")
@@ -50,7 +50,7 @@ for i in range(2):
     axs[i].set_xticks(np.arange(-0.5, 2.0, 0.5))
 ```
 <p align="center">
-  <img src="https://github.com/RenZhen95/PDE-Segregate/blob/main/docs/artwork/example_plot.svg" width="550">
+  <img src="https://github.com/RenZhen95/prod-fs/blob/main/docs/artwork/example_plot.svg" width="550">
 </p>
 
 Check out the notebooks provided as tutorials and examples of some specific use cases.
