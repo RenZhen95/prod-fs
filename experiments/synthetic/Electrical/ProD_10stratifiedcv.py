@@ -17,7 +17,7 @@ from sklearn.metrics import balanced_accuracy_score
 
 if len(sys.argv) < 4:
     print(
-        "Possible usage: python3.11 PDE-S_10stratifiedfoldcv.py <datasetsFolder> " +
+        "Possible usage: python3.11 ProD_10stratifiedfoldcv.py <datasetsFolder> " +
         "<datasetName> <folder>"
     )
     sys.exit(1)
@@ -31,7 +31,7 @@ with open(datasetsFolder.joinpath(f"{datasetName}_datasets.pkl"), "rb") as handl
     datasets = pickle.load(handle)
 
 # Reading the top 10 features
-with open(folder.joinpath(f"PDE-S/{datasetName}PDE-S_ranks.pkl"), "rb") as handle:
+with open(folder.joinpath(f"ProD/{datasetName}ProD_ranks.pkl"), "rb") as handle:
     ranks_df = pickle.load(handle)
 
 ranks_n30 = ranks_df[ranks_df["n_obs"] == 30.0]
@@ -39,7 +39,7 @@ ranks_n50 = ranks_df[ranks_df["n_obs"] == 50.0]
 ranks_n70 = ranks_df[ranks_df["n_obs"] == 70.0]
 ranks = {30: ranks_n30, 50: ranks_n50, 70: ranks_n70}
 
-# 3 nObs x 50 iterations x 5 Classifiers (only for PDE-S)
+# 3 nObs x 50 iterations x 5 Classifiers (only for ProD)
 performance_df = pd.DataFrame(
     data=np.zeros((3*50*5, 5)), columns=["Bal.Acc", "nObs", "Iteration", "FS", "Clf"]
 )
@@ -60,7 +60,7 @@ for nObs in [30, 50, 70]:
         X = datasets[nObs][itr]['X']
         y = datasets[nObs][itr]['y']
 
-        top_features = ranks_peritr["PDE-S"].to_numpy()
+        top_features = ranks_peritr["ProD"].to_numpy()
         top_features = list(map(int, top_features))
         print(top_features)
 
@@ -134,38 +134,38 @@ for nObs in [30, 50, 70]:
         performance_df.at[count, "Bal.Acc"] = balAcc_kNN.mean()
         performance_df.at[count, "nObs"] = nObs
         performance_df.at[count, "Iteration"] = itr
-        performance_df.at[count, "FS"] = "PDE-S"
+        performance_df.at[count, "FS"] = "ProD"
         performance_df.at[count, "Clf"] = "kNN"
 
         performance_df.at[count+1, "Bal.Acc"] = balAcc_SVM.mean()
         performance_df.at[count+1, "nObs"] = nObs
         performance_df.at[count+1, "Iteration"] = itr
-        performance_df.at[count+1, "FS"] = "PDE-S"
+        performance_df.at[count+1, "FS"] = "ProD"
         performance_df.at[count+1, "Clf"] = "SVM"
 
         performance_df.at[count+2, "Bal.Acc"] = balAcc_NB.mean()
         performance_df.at[count+2, "nObs"] = nObs
         performance_df.at[count+2, "Iteration"] = itr
-        performance_df.at[count+2, "FS"] = "PDE-S"
+        performance_df.at[count+2, "FS"] = "ProD"
         performance_df.at[count+2, "Clf"] = "NB"
 
         performance_df.at[count+3, "Bal.Acc"] = balAcc_LDA.mean()
         performance_df.at[count+3, "nObs"] = nObs
         performance_df.at[count+3, "Iteration"] = itr
-        performance_df.at[count+3, "FS"] = "PDE-S"
+        performance_df.at[count+3, "FS"] = "ProD"
         performance_df.at[count+3, "Clf"] = "LDA"
 
         performance_df.at[count+4, "Bal.Acc"] = balAcc_DT.mean()
         performance_df.at[count+4, "nObs"] = nObs
         performance_df.at[count+4, "Iteration"] = itr
-        performance_df.at[count+4, "FS"] = "PDE-S"
+        performance_df.at[count+4, "FS"] = "ProD"
         performance_df.at[count+4, "Clf"] = "DT"
         count += 5
 
-performance_df.to_csv(f"{datasetName}10foldcvPDE-S.csv")
+performance_df.to_csv(f"{datasetName}10foldcvProD.csv")
 
 averaged_df = performance_df.groupby(["nObs", "FS", "Clf"]).mean()
 averaged_df = averaged_df.drop(columns=["Iteration"])
-averaged_df.to_csv(f"{datasetName}10foldcvPDE-S_averaged.csv")
+averaged_df.to_csv(f"{datasetName}10foldcvProD_averaged.csv")
 
 sys.exit(0)

@@ -6,11 +6,11 @@ from pathlib import Path
 from time import process_time
 from collections import defaultdict
 
-from pdeseg import PDE_Segregate
+from prod_fs import ProD
 
 if len(sys.argv) < 3:
     print(
-        "Possible usage: python3 PDE-S_Electrical.py " +
+        "Possible usage: python3 ProD_Electrical.py " +
         "<processedDatasets> <dataset_name>"
     )
     sys.exit(1)
@@ -28,18 +28,18 @@ with open(synthetic_datasets_pkl, "rb") as handle:
 # 50 iterations x 3 different number of samples
 elapsed_times = pd.DataFrame(
     data=np.zeros((50*3, 3)),
-    columns=["PDE-S", "iteration", "n_obs"]
+    columns=["ProD", "iteration", "n_obs"]
 )
 
 scores_df = pd.DataFrame(
     data=np.zeros((50*3*100, 4)),
-    columns=["feature", "PDE-S", "iteration", "n_obs"]
+    columns=["feature", "ProD", "iteration", "n_obs"]
 )
 scores_df["feature"] = np.tile(np.arange(0, 100, 1), 150)
 
 rank_df = pd.DataFrame(
     data=np.zeros((50*3*10, 4)),
-    columns=["rank", "PDE-S", "iteration", "n_obs"]
+    columns=["rank", "ProD", "iteration", "n_obs"]
 )
 rank_df["rank"] = np.tile(np.arange(0, 10, 1), 150)
 
@@ -57,40 +57,40 @@ for n_obs in synthetic_datasets.keys():
         y = n_obs_datasets[i]['y']
 
         # Proposed algorithm
-        tPDE_start = process_time()
-        pdeSegregate = PDE_Segregate(
+        tProD_start = process_time()
+        prodRanker = ProD(
             integration_method="trapz", delta=500, bw_method="scott",
             k=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5
         )
-        pdeSegregate.fit(X, y)
-        tPDE_stop = process_time()
-        tPDE = tPDE_stop - tPDE_start
+        prodRanker.fit(X, y)
+        tProD_stop = process_time()
+        tProD = tProD_stop - tProD_start
 
         # === === === === === === ===
         # GETTING TOP N FEATURES
-        rank_df.loc[count_r:count_r+9, "PDE-S"] = pdeSegregate.get_topnFeatures(nRetainedFeatures)
+        rank_df.loc[count_r:count_r+9, "ProD"] = prodRanker.get_topnFeatures(nRetainedFeatures)
         rank_df.loc[count_r:count_r+9, "iteration"] = np.repeat([i], 10)
         rank_df.loc[count_r:count_r+9, "n_obs"] = np.repeat([n_obs], 10)
         count_r += 10
         
-        scores_df.loc[count:count+99, "PDE-S"] = pdeSegregate.feature_importances_
+        scores_df.loc[count:count+99, "ProD"] = prodRanker.feature_importances_
         scores_df.loc[count:count+99, "iteration"] = np.repeat([i], 100)
         scores_df.loc[count:count+99, "n_obs"] = np.repeat([n_obs], 100)
         count += 100
 
         # === === === === === === ===
         # GET ELAPSED TIME
-        elapsed_times.at[count_time, "PDE-S"] = tPDE
+        elapsed_times.at[count_time, "ProD"] = tProD
         elapsed_times.at[count_time, "iteration"] = i
         elapsed_times.at[count_time, "n_obs"] = n_obs
         count_time += 1
 
-with open(f"{dataset_name}PDE-S_ranks.pkl", "wb") as handle:
+with open(f"{dataset_name}ProD_ranks.pkl", "wb") as handle:
     pickle.dump(rank_df, handle)
 
-with open(f"{dataset_name}PDE-S_feature_scores.pkl", "wb") as handle:
+with open(f"{dataset_name}ProD_feature_scores.pkl", "wb") as handle:
     pickle.dump(scores_df, handle)
 
-elapsed_times.to_csv(f"{dataset_name}PDE-S_elapsed_times.csv", sep=',')
+elapsed_times.to_csv(f"{dataset_name}ProD_elapsed_times.csv", sep=',')
 
 sys.exit(0)

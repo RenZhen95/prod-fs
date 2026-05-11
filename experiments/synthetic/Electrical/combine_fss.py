@@ -70,11 +70,11 @@ for LHRlf_featurescores in [
             i += 1
 pyFSS_featurescores["LHRlf"] = LHRlf
 
-# Reading scores from PDE-S
-with open(folder.joinpath(f"PDE-S/{dataset}PDE-S_feature_scores.pkl"), "rb") as handle:
+# Reading scores from ProD
+with open(folder.joinpath(f"ProD/{dataset}ProD_feature_scores.pkl"), "rb") as handle:
     pdes_featurescores = pickle.load(handle)
 
-pyFSS_featurescores["PDE-S"] = pdes_featurescores["PDE-S"]
+pyFSS_featurescores["ProD"] = pdes_featurescores["ProD"]
 
 
 # === === === ===
@@ -175,11 +175,11 @@ for mRMR_ranks_df in [mRMR_30_10, mRMR_50_10, mRMR_70_10]:
             i += 1
 pyFSS_ranks["mRMR"] = mRMR_ranks
 
-# Reading ranks from PDE-S
-with open(folder.joinpath(f"PDE-S/{dataset}PDE-S_ranks.pkl"), "rb") as handle:
+# Reading ranks from ProD
+with open(folder.joinpath(f"ProD/{dataset}ProD_ranks.pkl"), "rb") as handle:
     pdes_ranks = pickle.load(handle)
 
-pyFSS_ranks["PDE-S"] = pdes_ranks["PDE-S"]
+pyFSS_ranks["ProD"] = pdes_ranks["ProD"]
 
 
 # === === === ===
@@ -197,12 +197,12 @@ mRMR_times = pd.read_csv(
     mRMR_folder.joinpath(f"{dataset}tmRMR.csv"), header=None
 )
 pdes_times = pd.read_csv(
-    folder.joinpath(f"PDE-S/{dataset}PDE-S_elapsed_times.csv"), index_col=0
+    folder.joinpath(f"ProD/{dataset}ProD_elapsed_times.csv"), index_col=0
 )
 py_times["IRlf"]  = IRlf_times.stack().values
 py_times["LHRlf"] = LHRlf_times.stack().values
 py_times["mRMR"] = mRMR_times.stack().values
-py_times["PDE-S"] = pdes_times["PDE-S"]
+py_times["ProD"] = pdes_times["ProD"]
 
 pyFSS_featurescores.to_csv(
     folder.joinpath(f"Combined/{dataset}_featurescores.csv")

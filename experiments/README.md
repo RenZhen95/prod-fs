@@ -1,5 +1,5 @@
 ## Steps to reproduce results
-To reconstruct results from the paper (liaw2024) run the scripts in the following order as shown below.
+To reconstruct results from the paper, run the scripts in the following order as shown below.
 
 **Note**: 
 - The following feature selection methods are implemented in Matlab:
@@ -29,7 +29,7 @@ Generated datasets might show random variations due to how computers handle rand
 **Step 1**
 
 Create a folder for each of the datasets above, each with the following subfolders:
--  PDE-S
+-  ProD
 -  OtherFS
 -  IRelief
 -  LHRelief
@@ -41,12 +41,12 @@ Now, for each dataset carry out **Steps 2-5** ...
 
 **Step 2**
 
-Carry out feature selection with PDE-Segregate:
+Carry out feature selection with ProD:
 ```  
-python3 synthetic/Electrical/PDE-S_Electrical.py
+python3 synthetic/Electrical/ProD_Electrical.py
 ```
 
-Save the output files in the PDE-S subfolder made in **Step 0**.
+Save the output files in the ProD subfolder made in **Step 0**.
 
 **Step 3**
 
@@ -80,27 +80,27 @@ Evaluations
   ```
 - Classification accuracy via 10-fold stratified cross-validation
   ```
-  python3 synthetic/Electrical/PDE-S_10stratifiedcv.py
+  python3 synthetic/Electrical/ProD_10stratifiedcv.py
   python3 synthetic/Electrical/10stratifiedcv.py
   ```
 
-### SD datasets
+### SM datasets
 **Step 0**
 
-The SD datasets are generated according to the method proposed by (paper). The synthetic datasets are also available at (...). However, for a more accurate reproduction, unzip the compressed folder SD-Datasets.zip to use the datasets used in our paper, which have been preprocessed to better suit our "style".
+The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][https://github.com/rdiaz02/varSelRF-suppl-mat]. However, for a more accurate reproduction, unzip the compressed folder SM-Datasets.zip to use the datasets used in our paper, which have been preprocessed to better suit our "style".
 
 **Step 1**
 
-Carry out feature selection with PDE-Segregate:
+Carry out feature selection with ProD:
 ```  
-python3 synthetic/SDI/PDE-S_SDI.py
+python3 synthetic/SM/ProD_SM.py
 ```
 
 **Step 2**
 
 Carry out feature selection with other feature selection methods implemented in Python:
 ```  
-python3 synthetic/SDI/featureSelection_SDI.py
+python3 synthetic/SM/featureSelection_SDI.py
 ```
 
 Also carry out feature selection with methods implemented in Matlab:
@@ -116,3 +116,4 @@ Also carry out feature selection with methods implemented in Matlab:
 [LHR]: <https://doi.org/10.1186/1471-2105-15-70>
 [mRMR]: <https://doi.org/10.1109/CSB.2003.1227396>
 [SucRate]: <https://doi.org/10.1007/s10115-012-0487-8>
+[SM]: <https://doi.org/10.1186/1471-2105-7-3>
