@@ -1,15 +1,16 @@
 % mRMR by Ding, 2005
 clear; clc
 [wdir, ~] = fileparts(mfilename("fullpath"));
-pyenv(Version="/usr/bin/python3.11");
+% Assuming the pyenv environment is accessible my MATLAB
+% Check my typing pyenv in the Command Window
 pickle = py.importlib.import_module('pickle');
 
 % Modify file location accordingly
-cd('../../../../datasets/synthetic/Electrical/')
+cd('../Electrical/')
 
 % Modify dataset name accordingly
-%datasetname = "ANDORdiscrete";
-datasetname = "ADDERdiscrete";
+datasetname = "ANDORdiscrete";
+%datasetname = "ADDERdiscrete";
 
 handle = py.open(datasetname + "_datasets.pkl", 'rb');
 processedDatasets_dict = pickle.load(handle);

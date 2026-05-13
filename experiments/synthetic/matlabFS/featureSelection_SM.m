@@ -31,7 +31,8 @@ t_LM = zeros(3, 4);
 t_I  = zeros(3, 4);
 
 for i=1:4
-    cd('/home/liaw/repo/PDE-SegregateDatasets/synthetic/SDI/')
+    % Adjust path accordingly
+    cd('../SM/SM-Datasets/')
     X_nClass2 = readmatrix("X/" + nClass2_idxs(i) + "_X.csv");
     y_nClass2 = readmatrix("y/" + nClass2_idxs(i) + "_y.csv");
     y_nClass2 = y_nClass2 + 1;

@@ -13,8 +13,10 @@ rank_nClass4 = zeros(4060, 4);
 
 t_mRMR = zeros(3, 4);
 
+% Adjust path accordingly
+cd('../SM/SM-Datasets/')
+
 for i=1:4
-    cd('/home/liaw/repo/PDE-SegregateDatasets/synthetic/SDI/')
     % nClass = 2
     X_nClass2 = readmatrix("X/" + nClass2_idxs(i) + "_X.csv");
     y_nClass2 = readmatrix("y/" + nClass2_idxs(i) + "_y.csv");
@@ -91,7 +93,7 @@ writematrix(t_mRMR, "tmRMR.csv");
 
 function featureCol = discretize_feature(col, uE, lE)
   featureCol = zeros(size(col));
-  for r=1:size(col)
+  for r=1:size(col,1)
       if col(r) > uE
           featureCol(r) = 1;
       elseif col(r) < lE
