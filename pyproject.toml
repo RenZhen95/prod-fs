@@ -28,5 +28,7 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "pandas>=2.3.3",
+    "read-dataframe>=0.0.2",
     "scikit-learn>=1.8.0",
+    "skrebate>=0.62",
 ]

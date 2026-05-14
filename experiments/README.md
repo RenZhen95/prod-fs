@@ -48,6 +48,8 @@ python3 synthetic/Electrical/ProD_Electrical.py
 
 Save the output files in the ProD subfolder made in **Step 0**.
 
+For the argument `<dataset_name>`, keep them consistent across the next few Python and MATLAB scripts. So for example use `ANDORdiscrete` for the ANDOR discrete datasets and make sure this is consistently used from Steps 2-5.
+
 **Step 3**
 
 Carry out feature selection with other feature selection methods implemented in Python:
@@ -78,11 +80,14 @@ Evaluations
   ```
   python3 synthetic/Electrical/evaluate_fss.py
   ```
+
 - Classification accuracy via 10-fold stratified cross-validation
   ```
   python3 synthetic/Electrical/ProD_10stratifiedcv.py
   python3 synthetic/Electrical/10stratifiedcv.py
   ```
+
+  The scripts for running the stratified 10-fold CV are split between ProD and the other FS as part of the development process, but they are essentially the same. Feel free to combine them.
 
 ### SM datasets
 **Step 0**
@@ -91,24 +96,62 @@ The SM datasets are generated according to the method proposed by [Diaz et al., 
 
 **Step 1**
 
+Create the following subfolders:
+-  ProD
+-  OtherFS
+-  IRelief
+-  LHRelief
+-  mRMR
+-  Combined
+
+**Step 2**
+
 Carry out feature selection with ProD:
 ```  
 python3 synthetic/SM/ProD_SM.py
 ```
 
-**Step 2**
+Save the output files in the ProD subfolder made in **Step 0**.
+
+**Step 3**
 
 Carry out feature selection with other feature selection methods implemented in Python:
 ```  
 python3 synthetic/SM/featureSelection_SDI.py
 ```
 
+Save the output files in the OtherFS subfolder made in **Step 0**.
+
 Also carry out feature selection with methods implemented in Matlab:
 - synthetic/matlabFS/featureSelection_SDI.m (I-Relief and LHR)
 - synthetic/matlabFS/featureSelection_mRMR_SDI.m (mRMR)
 
-**Step 3**
+Save the corresponding output files in the IRelief, LHRelief, and mRMR subfolders made in **Step 0**.
 
+**Step 4**
+
+Carry out preprocessing step to combine feature selection results from the different scripts.
+```
+python3 synthetic/SM/combine_fss.py
+```
+
+**Step 5**
+
+Evaluations
+- Success rates according to [Bolón-Canedo et al., 2013][SucRate]
+  ```
+  python3 synthetic/SM/evaluate_fss.py
+  ```
+
+  The <trueSignatures_folder> should be the path to the folder `trueSignatures` zipped in SM-Datasets.zip
+
+- Classification accuracy via 10-fold stratified cross-validation
+  ```
+  python3 synthetic/SM/ProD_10stratifiedcv.py
+  python3 synthetic/SM/10stratifiedcv.py
+  ```
+
+  The scripts for running the stratified 10-fold CV are split between ProD and the other FS as part of the development process, but they are essentially the same. Feel free to combine them.
 
 ---
 [syntElectrical]: <https://doi.org/10.48550/arXiv.2211.03035>

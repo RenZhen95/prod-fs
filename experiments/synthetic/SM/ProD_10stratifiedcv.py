@@ -18,7 +18,7 @@ from sklearn.metrics import balanced_accuracy_score
 
 if len(sys.argv) < 3:
     print(
-        "Possible usage: python3.11 PDE-S_10stratifiedcv.py <datasetsFolder> <folder>"
+        "Possible usage: python3.11 ProD_10stratifiedcv.py <datasetsFolder> <folder>"
     )
     sys.exit(1)
 else:
@@ -53,7 +53,7 @@ X_dict = {2: nClass2_X, 3: nClass3_X, 4: nClass4_X}
 y_dict = {2: nClass2_y, 3: nClass3_y, 4: nClass4_y}
 
 # Reading the top 120 features
-with open(folder.joinpath(f"PDE-S/SDIPDE-S_ranks.pkl"), "rb") as handle:
+with open(folder.joinpath(f"ProD/SMProD_ranks.pkl"), "rb") as handle:
     ranks_df = pickle.load(handle)
 
 ranks_nClass2 = ranks_df[ranks_df["nClass"] == 2.0]
@@ -61,7 +61,7 @@ ranks_nClass3 = ranks_df[ranks_df["nClass"] == 3.0]
 ranks_nClass4 = ranks_df[ranks_df["nClass"] == 4.0]
 ranks = {2: ranks_nClass2, 3: ranks_nClass3, 4: ranks_nClass4}
 
-# 3 nClass x 4 iterations x 5 Classifiers (only for PDE-S)
+# 3 nClass x 4 iterations x 5 Classifiers (only for ProD)
 performance_df = pd.DataFrame(
     data=np.zeros((3*4*5, 5)), columns=["Bal.Acc", "nClass", "Iteration", "FS", "Clf"]
 )
@@ -84,7 +84,7 @@ for nClass in [2, 3, 4]:
         y = y_dict[nClass][itr]
         print(X.shape)
 
-        top_features = ranks_peritr["PDE-S"].to_numpy()
+        top_features = ranks_peritr["ProD"].to_numpy()
         top_features = list(map(int, top_features))
 
         X_reduced = X[:,top_features]
@@ -157,38 +157,38 @@ for nClass in [2, 3, 4]:
         performance_df.at[count, "Bal.Acc"] = balAcc_kNN.mean()
         performance_df.at[count, "nClass"] = nClass
         performance_df.at[count, "Iteration"] = itr
-        performance_df.at[count, "FS"] = "PDE-S"
+        performance_df.at[count, "FS"] = "ProD"
         performance_df.at[count, "Clf"] = "kNN"
 
         performance_df.at[count+1, "Bal.Acc"] = balAcc_SVM.mean()
         performance_df.at[count+1, "nClass"] = nClass
         performance_df.at[count+1, "Iteration"] = itr
-        performance_df.at[count+1, "FS"] = "PDE-S"
+        performance_df.at[count+1, "FS"] = "ProD"
         performance_df.at[count+1, "Clf"] = "SVM"
 
         performance_df.at[count+2, "Bal.Acc"] = balAcc_NB.mean()
         performance_df.at[count+2, "nClass"] = nClass
         performance_df.at[count+2, "Iteration"] = itr
-        performance_df.at[count+2, "FS"] = "PDE-S"
+        performance_df.at[count+2, "FS"] = "ProD"
         performance_df.at[count+2, "Clf"] = "NB"
 
         performance_df.at[count+3, "Bal.Acc"] = balAcc_LDA.mean()
         performance_df.at[count+3, "nClass"] = nClass
         performance_df.at[count+3, "Iteration"] = itr
-        performance_df.at[count+3, "FS"] = "PDE-S"
+        performance_df.at[count+3, "FS"] = "ProD"
         performance_df.at[count+3, "Clf"] = "LDA"
 
         performance_df.at[count+4, "Bal.Acc"] = balAcc_DT.mean()
         performance_df.at[count+4, "nClass"] = nClass
         performance_df.at[count+4, "Iteration"] = itr
-        performance_df.at[count+4, "FS"] = "PDE-S"
+        performance_df.at[count+4, "FS"] = "ProD"
         performance_df.at[count+4, "Clf"] = "DT"
         count += 5
 
-performance_df.to_csv("10foldcvPDE-S.csv")
+performance_df.to_csv("10foldcvProD.csv")
 
 averaged_df = performance_df.groupby(["nClass", "FS", "Clf"]).mean()
 averaged_df = averaged_df.drop(columns=["Iteration"])
-averaged_df.to_csv("10foldcvPDE-S_averaged.csv")
+averaged_df.to_csv("10foldcvProD_averaged.csv")
 
 sys.exit(0)

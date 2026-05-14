@@ -28,9 +28,9 @@ else:
 
 nRetainedFeatures = 120 # Top 3 % of 4000 (Canedo, 2012)
 
-nClass2 = pd.read_csv(datasetFolder.joinpath("SDI_nClass2.csv"), index_col=0)
-nClass3 = pd.read_csv(datasetFolder.joinpath("SDI_nClass3.csv"), index_col=0)
-nClass4 = pd.read_csv(datasetFolder.joinpath("SDI_nClass4.csv"), index_col=0)
+nClass2 = pd.read_csv(datasetFolder.joinpath("SM_nClass2.csv"), index_col=0)
+nClass3 = pd.read_csv(datasetFolder.joinpath("SM_nClass3.csv"), index_col=0)
+nClass4 = pd.read_csv(datasetFolder.joinpath("SM_nClass4.csv"), index_col=0)
 
 # Let's just take the 1 dimension, 5 genes per dimension for now
 def get_dataset_index(idxdf, ndim, ngenes):
@@ -198,12 +198,12 @@ for sel_idxs in [nClass2_sel_idx, nClass3_sel_idx, nClass4_sel_idx]:
         elapsed_times.at[count_time, "nClass"] = nClass
         count_time += 1
 
-with open("SDIranks.pkl", "wb") as handle:
+with open("SMranks.pkl", "wb") as handle:
     pickle.dump(rank_df, handle)
 
-with open("SDIfeature_scores.pkl", "wb") as handle:
+with open("SMfeature_scores.pkl", "wb") as handle:
     pickle.dump(scores_df, handle)
 
-elapsed_times.to_csv("SDIelapsed_times.csv", sep=',')
+elapsed_times.to_csv("SMelapsed_times.csv", sep=',')
 
 sys.exit(0)

@@ -25,8 +25,8 @@ else:
     datasetsFolder = Path(sys.argv[1])
     folder = Path(sys.argv[2])
 
-XFolder = SDIFolder.joinpath('X')
-yFolder = SDIFolder.joinpath('y')
+XFolder = datasetsFolder.joinpath('X')
+yFolder = datasetsFolder.joinpath('y')
 
 # Getting datasets
 nClass2_idxs = [16, 43, 70, 97]
@@ -55,7 +55,7 @@ y_dict = {2: nClass2_y, 3: nClass3_y, 4: nClass4_y}
 # Reading the top 120 features
 combinedFolder = folder.joinpath("Combined")
 ranks_df = pd.read_csv(
-    combinedFolder.joinpath("SDIranks.csv"), index_col=0
+    combinedFolder.joinpath("SMranks.csv"), index_col=0
 )
 
 ranks_nClass2 = ranks_df[ranks_df["nClass"] == 2.0]

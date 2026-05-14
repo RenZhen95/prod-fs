@@ -18,9 +18,9 @@ else:
 
 nRetainedFeatures = 120 # Top 3 % of 4000 (Canedo, 2012)
 
-nClass2 = pd.read_csv(datasetFolder.joinpath("SDI_nClass2.csv"), index_col=0)
-nClass3 = pd.read_csv(datasetFolder.joinpath("SDI_nClass3.csv"), index_col=0)
-nClass4 = pd.read_csv(datasetFolder.joinpath("SDI_nClass4.csv"), index_col=0)
+nClass2 = pd.read_csv(datasetFolder.joinpath("SM_nClass2.csv"), index_col=0)
+nClass3 = pd.read_csv(datasetFolder.joinpath("SM_nClass3.csv"), index_col=0)
+nClass4 = pd.read_csv(datasetFolder.joinpath("SM_nClass4.csv"), index_col=0)
 
 # Let's just take the 1 dimension, 5 genes per dimension for now
 def get_dataset_index(idxdf, ndim, ngenes):
@@ -93,14 +93,14 @@ for sel_idxs in [nClass2_sel_idx, nClass3_sel_idx, nClass4_sel_idx]:
 
         # === === === === === === ===
         # GETTING TOP N FEATURES
-        rank_df.loc[count_r:count_r+119, "ProD"] = pdeSegregate.top_features_[
-            :nRetainedFeatures
-        ]
+        rank_df.loc[count_r:count_r+119, "ProD"] = prodRanker.get_topnFeatures(
+            nRetainedFeatures
+        )
         rank_df.loc[count_r:count_r+119, "iteration"] = np.repeat([d_itr], 120)
         rank_df.loc[count_r:count_r+119, "nClass"] = np.repeat([nClass], 120)
         count_r += 120
 
-        scores_df.loc[count:count+4059, "ProD"] = pdeSegregate.feature_importances_
+        scores_df.loc[count:count+4059, "ProD"] = prodRanker.feature_importances_
         scores_df.loc[count:count+4059, "iteration"] = np.repeat([d_itr], 4060)
         scores_df.loc[count:count+4059, "nClass"] = np.repeat([nClass], 4060)
         count += 4060

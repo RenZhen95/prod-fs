@@ -14,7 +14,7 @@ else:
 
 # === === === ===
 # Feature Scores (other FS)
-with open(folder.joinpath("OtherFS/SDIfeature_scores.pkl"), "rb") as handle:
+with open(folder.joinpath("OtherFS/SMfeature_scores.pkl"), "rb") as handle:
     pyFSS_featurescores = pickle.load(handle)
 
 # Reading weights from IRelief
@@ -69,16 +69,16 @@ for LHRlf_featurescores in [
             i += 1
 pyFSS_featurescores["LHRlf"] = LHRlf
 
-# Reading scores from PDE-S
-with open(folder.joinpath(f"PDE-S/SDIPDE-S_feature_scores.pkl"), "rb") as handle:
+# Reading scores from ProD
+with open(folder.joinpath(f"ProD/SMProD_feature_scores.pkl"), "rb") as handle:
     pdes_featurescores = pickle.load(handle)
 
-pyFSS_featurescores["PDE-S"] = pdes_featurescores["PDE-S"]
+pyFSS_featurescores["ProD"] = pdes_featurescores["ProD"]
 
 
 # === === === ===
 # Ranks
-with open(folder.joinpath("OtherFS/SDIranks.pkl"), "rb") as handle:
+with open(folder.joinpath("OtherFS/SMranks.pkl"), "rb") as handle:
     pyFSS_ranks = pickle.load(handle)
 
 # Reading ranks from mRMR (Ding, 2005)
@@ -175,17 +175,17 @@ for mRMR_ranks_df in [mRMR_nClass2_120, mRMR_nClass3_120, mRMR_nClass4_120]:
 pyFSS_ranks["mRMR"] = mRMR_ranks
 
 
-# Reading ranks from PDE-S
-with open(folder.joinpath(f"PDE-S/SDIPDE-S_ranks.pkl"), "rb") as handle:
+# Reading ranks from ProD
+with open(folder.joinpath(f"ProD/SMProD_ranks.pkl"), "rb") as handle:
     pdes_ranks = pickle.load(handle)
 
-pyFSS_ranks["PDE-S"] = pdes_ranks["PDE-S"]
+pyFSS_ranks["ProD"] = pdes_ranks["ProD"]
 
 
 # === === === ===
 # Elapsed Times
 py_times = pd.read_csv(
-    folder.joinpath("OtherFS/SDIelapsed_times.csv"), index_col=0
+    folder.joinpath("OtherFS/SMelapsed_times.csv"), index_col=0
 )
 IRlf_times = pd.read_csv(
     IRlf_folder.joinpath("tI.csv"), header=None
@@ -197,15 +197,15 @@ mRMR_times = pd.read_csv(
     mRMR_folder.joinpath("tmRMR.csv"), header=None
 )
 pdes_times = pd.read_csv(
-    folder.joinpath(f"PDE-S/SDIPDE-S_elapsed_times.csv"), index_col=0
+    folder.joinpath(f"ProD/SMProD_elapsed_times.csv"), index_col=0
 )
 py_times["IRlf"]  = IRlf_times.stack().values
 py_times["LHRlf"] = LHRlf_times.stack().values
 py_times["mRMR"] = mRMR_times.stack().values
-py_times["PDE-S"] = pdes_times["PDE-S"]
+py_times["ProD"] = pdes_times["ProD"]
 
-pyFSS_featurescores.to_csv(folder.joinpath("Combined/SDIfeaturescores.csv"))
-pyFSS_ranks.to_csv(folder.joinpath("Combined/SDIranks.csv"))
-py_times.to_csv(folder.joinpath("Combined/SDIelapsedtimes.csv"))
+pyFSS_featurescores.to_csv(folder.joinpath("Combined/SMfeaturescores.csv"))
+pyFSS_ranks.to_csv(folder.joinpath("Combined/SMranks.csv"))
+py_times.to_csv(folder.joinpath("Combined/SMelapsedtimes.csv"))
 
 sys.exit(0)

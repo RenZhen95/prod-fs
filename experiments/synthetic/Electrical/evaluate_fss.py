@@ -65,8 +65,6 @@ nTop = 10
 def count_instances_intop10(_top10, _list=[]):
     list_FSS = list(_top10.columns)
     list_FSS.remove("rank")
-    list_FSS.remove("iteration")
-    list_FSS.remove("n_obs")
 
     count = pd.Series(data=np.zeros(len(list_FSS)), index=list_FSS)
 
@@ -84,8 +82,6 @@ groupeddf_relvcount = ranks_df.groupby(["iteration", "n_obs"]).apply(
 def check_ifrelevantistop(_top10, _list=[]):
     list_FSS = list(_top10.columns)
     list_FSS.remove("rank")
-    list_FSS.remove("iteration")
-    list_FSS.remove("n_obs")
 
     _top10_nfirst = _top10.iloc[:len(_list),:]
     relv_atthetop = pd.Series(
@@ -149,54 +145,3 @@ average_successrate.to_csv(f"{datasetName}_successrates.csv")
 sd_successrate.to_csv(f"{datasetName}_successrates_sd.csv")
 
 sys.exit(0)
-
-# Metrics according to Kamalov, 2022
-# 1. Simply compare feature significance metric of relevant vs non-relevant features
-# 2. Median rankings across 10 iterations of relevant features
-
-# # Ranking features (Implementation of 2.)
-# def get_rankings(_importances):
-#     list_FSS = list(_importances.columns)
-#     list_FSS.remove("feature")
-#     list_FSS.remove("iteration")
-#     list_FSS.remove("n_obs")
-
-#     n_features = _importances.shape[0]
-#     rank = pd.DataFrame(
-#         data=np.zeros((n_features, len(list_FSS))), columns=list_FSS
-#     )
-#     for fss in list_FSS:
-#         feature_importance = _importances[fss].reset_index(drop=True)
-
-#         # Sorted features from most important to least
-#         sortedfeatures = sorted(
-#             range(n_features), key=lambda i: feature_importance[i], reverse=True
-#         )
-
-#         # Rank of each feature
-#         feature_ranks = np.zeros(n_features)
-#         for r, f in enumerate(sortedfeatures):
-#             feature_ranks[f] = r
-
-#         rank[fss] = feature_ranks
-
-#     return rank
-
-# groupeddf_ranks = ANDOR_scoresdf.groupby(["iteration", "n_obs"]).apply(
-#     get_rankings
-# )
-# print(groupeddf_ranks)
-
-# groupeddf_ranks_n30 = groupeddf_ranks.xs(30, level=1)
-# groupeddf_ranks_n50 = groupeddf_ranks.xs(50, level=1)
-# groupeddf_ranks_n70 = groupeddf_ranks.xs(70, level=1)
-
-# ranks_n30_f0 = groupeddf_ranks_n30.xs(0, level=1)
-# ranks_n50_f0 = groupeddf_ranks_n50.xs(0, level=1)
-# ranks_n70_f0 = groupeddf_ranks_n70.xs(0, level=1)
-
-# print(ranks_n30_f0.median())
-# print(ranks_n50_f0.median())
-# print(ranks_n70_f0.median())
-
-# plt.show()

@@ -5,10 +5,6 @@ import pandas as pd
 from pathlib import Path
 from collections import defaultdict
 
-"""
-For the Electrical datasets, 3 % of 4000 would be roughly 120
-"""
-
 if len(sys.argv) < 4:
     print(
         "Possible usage: python3.11 evaluate_fss.py <resultsFolder> " +
@@ -26,7 +22,7 @@ else:
 
 # Reading the top features
 ranks_df = pd.read_csv(
-    resultsFolder.joinpath("SDIranks.csv"), index_col=0
+    resultsFolder.joinpath("SMranks.csv"), index_col=0
 )
 
 # Narrow threshold if desired
@@ -60,7 +56,7 @@ trueSignatures = {
 # Features Summary
 # Reading the feature scores
 feature_scores_df = pd.read_csv(
-    resultsFolder.joinpath("SDIfeaturescores.csv"), index_col=0
+    resultsFolder.joinpath("SMfeaturescores.csv"), index_col=0
 )
 features = feature_scores_df["feature"].to_numpy()
 nFeatures = len(list(set(features)))
@@ -76,23 +72,18 @@ _alpha = min(0.5, Rt/It)
 print(f"Total irrelevant features : {It}")
 print(f"Total relevant features   : {Rt}")
 
-def count_instances_attop(_top):
+def count_instances_attop(_top, nClassList, nItrList):
     list_FSS = list(_top.columns)
     list_FSS.remove("rank")
-    list_FSS.remove("iteration")
-    list_FSS.remove("nClass")
-
-    nClass = list(set(_top["nClass"].to_numpy()))[0]
-    itr = list(set(_top["iteration"].to_numpy()))[0]
 
     # Idea: Only one feature should be selected from each of the three
     # dimensions, meaning there should only be three relevant features
 
     # As soon as one feature is selected from a dimension, the rest are
     # redundant, and will be considered "irrelevant"
-    _truegenes_dim1 = trueSignatures[nClass][itr].loc[0].values
-    _truegenes_dim2 = trueSignatures[nClass][itr].loc[1].values
-    _truegenes_dim3 = trueSignatures[nClass][itr].loc[2].values
+    _truegenes_dim1 = trueSignatures[nClassList][nItrList].loc[0].values
+    _truegenes_dim2 = trueSignatures[nClassList][nItrList].loc[1].values
+    _truegenes_dim3 = trueSignatures[nClassList][nItrList].loc[2].values
 
     _flag_dim1 = pd.Series(
         data=[False for _ in range(len(list_FSS))], index=list_FSS
@@ -126,21 +117,18 @@ def count_instances_attop(_top):
     return count
 
 groupeddf_relvcount = ranks_df.groupby(["iteration", "nClass"]).apply(
-    count_instances_attop
+    count_instances_attop,
+    list(set(ranks_df["nClass"].to_numpy()))[0],
+    list(set(ranks_df["iteration"].to_numpy()))[0]
 )
 
-def check_ifrelevantistop(_top):
+def check_ifrelevantistop(_top, nClassList, nItrList):
     list_FSS = list(_top.columns)
     list_FSS.remove("rank")
-    list_FSS.remove("iteration")
-    list_FSS.remove("nClass")
 
-    nClass = list(set(_top["nClass"].to_numpy()))[0]
-    itr = list(set(_top["iteration"].to_numpy()))[0]
-
-    _truegenes_dim1 = trueSignatures[nClass][itr].loc[0].values
-    _truegenes_dim2 = trueSignatures[nClass][itr].loc[1].values
-    _truegenes_dim3 = trueSignatures[nClass][itr].loc[2].values
+    _truegenes_dim1 = trueSignatures[nClassList][nItrList].loc[0].values
+    _truegenes_dim2 = trueSignatures[nClassList][nItrList].loc[1].values
+    _truegenes_dim3 = trueSignatures[nClassList][nItrList].loc[2].values
 
     _flag_dim1 = pd.Series(data=np.zeros(len(list_FSS)), index=list_FSS)
     _flag_dim2 = pd.Series(data=np.zeros(len(list_FSS)), index=list_FSS)
@@ -164,7 +152,9 @@ def check_ifrelevantistop(_top):
     return relv_atthetop
 
 groupeddf_relvattop = ranks_df.groupby(["iteration", "nClass"]).apply(
-    check_ifrelevantistop
+    check_ifrelevantistop,
+    list(set(ranks_df["nClass"].to_numpy()))[0],
+    list(set(ranks_df["iteration"].to_numpy()))[0]
 )
 
 # Computing the success rate as defined by Canedo, 2012
@@ -210,7 +200,7 @@ sd_successrate.loc[2.0] = sdsuccess_nClass2
 sd_successrate.loc[3.0] = sdsuccess_nClass3
 sd_successrate.loc[4.0] = sdsuccess_nClass4
 
-average_successrate.to_csv(f"{nTop}_SDIsuccessrates.csv")
-sd_successrate.to_csv(f"{nTop}_SDIsuccessrates_sd.csv")
+average_successrate.to_csv(f"{nTop}_SMsuccessrates.csv")
+sd_successrate.to_csv(f"{nTop}_SMsuccessrates_sd.csv")
 
 sys.exit(0)

@@ -23,15 +23,15 @@ import pandas as pd
 from pathlib import Path
 
 if len(sys.argv) < 2:
-    print("Possible usage: python3.11 <SDIfolder>")
+    print("Possible usage: python3.11 <SMfolder>")
     sys.exit(1)
 else:
-    SDIFolder = Path(sys.argv[1])
+    SMFolder = Path(sys.argv[1])
 
-XFolders = SDIFolder.joinpath('X')
-yFolders = SDIFolder.joinpath('y')
-trueSignatureFolders = SDIFolder.joinpath("trueSignatures")
-n_classes = pd.read_csv(SDIFolder.joinpath("n_classes.csv"), header=None)
+XFolders = SMFolder.joinpath('X')
+yFolders = SMFolder.joinpath('y')
+trueSignatureFolders = SMFolder.joinpath("trueSignatures")
+n_classes = pd.read_csv(SMFolder.joinpath("n_classes.csv"), header=None)
 
 datasets_meta = pd.DataFrame(
     data=np.zeros((108, 3)),
@@ -53,8 +53,8 @@ datasets_meta_nClass2 = datasets_meta[datasets_meta["nClass"]==2.0]
 datasets_meta_nClass3 = datasets_meta[datasets_meta["nClass"]==3.0]
 datasets_meta_nClass4 = datasets_meta[datasets_meta["nClass"]==4.0]
 
-datasets_meta_nClass2.to_csv("SDI_nClass2.csv")
-datasets_meta_nClass3.to_csv("SDI_nClass3.csv")
-datasets_meta_nClass4.to_csv("SDI_nClass4.csv")
+datasets_meta_nClass2.to_csv("SM_nClass2.csv")
+datasets_meta_nClass3.to_csv("SM_nClass3.csv")
+datasets_meta_nClass4.to_csv("SM_nClass4.csv")
 
 sys.exit(0)
