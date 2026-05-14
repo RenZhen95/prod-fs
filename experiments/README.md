@@ -92,7 +92,7 @@ Evaluations
 ### SM datasets
 **Step 0**
 
-The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][https://github.com/rdiaz02/varSelRF-suppl-mat]. However, for a more accurate reproduction, unzip the compressed folder SM-Datasets.zip to use the datasets used in our paper, which have been preprocessed to better suit our "style".
+The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder SM-Datasets.zip to use the datasets used in our paper, which have been preprocessed to better suit our "style".
 
 **Step 1**
 
@@ -117,14 +117,14 @@ Save the output files in the ProD subfolder made in **Step 0**.
 
 Carry out feature selection with other feature selection methods implemented in Python:
 ```  
-python3 synthetic/SM/featureSelection_SDI.py
+python3 synthetic/SM/featureSelection_SM.py
 ```
 
 Save the output files in the OtherFS subfolder made in **Step 0**.
 
 Also carry out feature selection with methods implemented in Matlab:
-- synthetic/matlabFS/featureSelection_SDI.m (I-Relief and LHR)
-- synthetic/matlabFS/featureSelection_mRMR_SDI.m (mRMR)
+- synthetic/matlabFS/featureSelection_SM.m (I-Relief and LHR)
+- synthetic/matlabFS/featureSelection_mRMR_SM.m (mRMR)
 
 Save the corresponding output files in the IRelief, LHRelief, and mRMR subfolders made in **Step 0**.
 
@@ -160,3 +160,4 @@ Evaluations
 [mRMR]: <https://doi.org/10.1109/CSB.2003.1227396>
 [SucRate]: <https://doi.org/10.1007/s10115-012-0487-8>
 [SM]: <https://doi.org/10.1186/1471-2105-7-3>
+[SMDatasets]: <https://github.com/rdiaz02/varSelRF-suppl-mat>
