@@ -175,6 +175,10 @@ python3 real/featureSelection_real.py
 Also carry out feature selection with methods implemented in Matlab:
  - real/matlabFS/
 
+## Results from real datasets
+**Step 0**
+Download the datasets from the links as provided in the paper, but for an exact reproduction 
+
 ---
 [syntElectrical]: <https://doi.org/10.48550/arXiv.2211.03035>
 [IRlf]: <https://doi.org/10.1109/TPAMI.2009.190>
