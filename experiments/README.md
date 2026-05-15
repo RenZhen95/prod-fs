@@ -9,7 +9,7 @@ To reconstruct results from the paper, run the scripts in the following order as
 
 - All the scripts require modifications to the paths of corresponding input files, either as input arguments or hard-coded in the scripts 
 
-## Results from synthetic dataset
+## Results from synthetic datasets
 ### Electrical datasets
 **Step 0**
 
@@ -152,6 +152,28 @@ Evaluations
   ```
 
   The scripts for running the stratified 10-fold CV are split between ProD and the other FS as part of the development process, but they are essentially the same. Feel free to combine them.
+
+## Results from real datasets
+**Step 0**
+
+Download the datasets from the links provided in the paper, but for an exact reproduction, use the pickled datasets in ProcessedDatasets.pkl
+
+**Step 1**
+
+Carry out feature selection with ProD:
+```
+python3 real/ProD_real.py
+```
+
+**Step 2**
+
+Carry out feature selection with other feature selection methods implemented in Python:
+```  
+python3 real/featureSelection_real.py
+```
+
+Also carry out feature selection with methods implemented in Matlab:
+ - real/matlabFS/
 
 ---
 [syntElectrical]: <https://doi.org/10.48550/arXiv.2211.03035>

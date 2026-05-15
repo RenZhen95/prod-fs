@@ -6,16 +6,11 @@ from pathlib import Path
 from time import process_time
 from collections import defaultdict
 
-sys.path.append(
-    os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    )
-)
-from pde_segregate import PDE_Segregate
+from prod_fs import ProD
 
 if len(sys.argv) < 4:
     print(
-        "Possible usage: python3 featureSelection.py <processedDatasets> " +
+        "Possible usage: python3 ProD_real.py <processedDatasets> " +
         "<nRetainedFeatures> <savefolder>"
     )
     sys.exit(1)
@@ -42,30 +37,30 @@ for dataset in datasets_dict.keys():
     y_mapper = datasets_dict[dataset]['y_mapper']
 
     # Proposed algorithm
-    tPDE_start = process_time()
-    pdeSegregate = PDE_Segregate(
+    tProD_start = process_time()
+    prodRanker = ProD(
         integration_method="trapz", delta=500, bw_method="scott",
-        n=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5,
+        k=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5,
         averaging_method="weighted"
     )
-    pdeSegregate.fit(X, y)
-    tPDE_stop = process_time()
-    tPDE = tPDE_stop - tPDE_start
+    prodRanker.fit(X, y)
+    tProD_stop = process_time()
+    tProD = tProD_stop - tProD_start
 
     # === === === === === === ===
     # GETTING TOP N FEATURES
-    inds_topFeatures_PDES = pdeSegregate.get_topnFeatures(
+    inds_topFeatures_ProD = prodRanker.get_topnFeatures(
         nRetainedFeatures
     )
-    dataset_inds_topFeatures[dataset] = inds_topFeatures_PDES
+    dataset_inds_topFeatures[dataset] = inds_topFeatures_ProD
 
     # === === === === === === ===
     # GET ELAPSED TIME
-    elapsed_times_perDS[dataset] = tPDE
+    elapsed_times_perDS[dataset] = tProD
 
-with open(savefolder.joinpath(f"top{nRetainedFeatures}Features_PDE-S.pkl"), "wb") as handle:
+with open(savefolder.joinpath(f"top{nRetainedFeatures}Features_ProD.pkl"), "wb") as handle:
     pickle.dump(dataset_inds_topFeatures, handle)
-with open(savefolder.joinpath(f"fsElapsedTimes_PDE-S.pkl"), "wb") as handle:
+with open(savefolder.joinpath(f"fsElapsedTimes_ProD.pkl"), "wb") as handle:
     pickle.dump(elapsed_times_perDS, handle)
 
 sys.exit(0)
