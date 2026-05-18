@@ -260,7 +260,6 @@ python3 real/NSL-KDD/traintest.py
 
 The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step 4**.
 
----
 [syntElectrical]: <https://doi.org/10.48550/arXiv.2211.03035>
 [IRlf]: <https://doi.org/10.1109/TPAMI.2009.190>
 [LHR]: <https://doi.org/10.1186/1471-2105-15-70>
