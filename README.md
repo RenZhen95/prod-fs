@@ -8,7 +8,7 @@ pip install prod-fs
 
 ## Example
 ```python
-from prodfs import ProD
+from prod_fs import ProD
 
 import numpy as np
 import matplotlib.pyplot as plt
