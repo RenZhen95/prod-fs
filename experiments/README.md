@@ -9,8 +9,8 @@ To reconstruct results from the paper, run the scripts in the following order as
 
 - All the scripts require modifications to the paths of corresponding input files, either as input arguments or hard-coded in the scripts 
 
-## Results from synthetic datasets
-### Electrical datasets
+## Results from Synthetic Datasets
+### Electrical Datasets
 **Step 0**
 
 Generate the datasets by runing the script (code adapted from paper by [Kamalov et al., 2022][syntElectrical]):
@@ -24,7 +24,7 @@ This will produce four Python-pickled binary files:
 - ANDOR discrete datasets
 - ADDER discrete datasets
 
-Generated datasets might show random variations due to how computers handle randomness. For an exact reproduction, use the datasets in Electrical-Datasets.zip
+Generated datasets might show random variations due to how computers handle randomness. For an exact reproduction, use the datasets in `Electrical-Datasets.zip`.
 
 **Step 1**
 
@@ -36,8 +36,7 @@ Create a folder for each of the datasets above, each with the following subfolde
 -  mRMR
 -  Combined
 
----
-Now, for each dataset carry out **Steps 2-5** ... 
+Now, for each dataset carry out **Steps 2-5**.
 
 **Step 2**
 
@@ -89,10 +88,10 @@ Evaluations
 
   The scripts for running the stratified 10-fold CV are split between ProD and the other FS as part of the development process, but they are essentially the same. Feel free to combine them.
 
-### SM datasets
+### SM Datasets
 **Step 0**
 
-The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder SM-Datasets.zip to use the datasets used in our paper, which have been preprocessed to better suit our "style".
+The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder `SM-Datasets.zip` to use the datasets used in our paper, which have been preprocessed to better suit our "style".
 
 **Step 1**
 
@@ -143,7 +142,7 @@ Evaluations
   python3 synthetic/SM/evaluate_fss.py
   ```
 
-  The <trueSignatures_folder> should be the path to the folder `trueSignatures` zipped in SM-Datasets.zip
+  The `<trueSignatures_folder>` should be the path to the folder `trueSignatures` zipped in SM-Datasets.zip
 
 - Classification accuracy via 10-fold stratified cross-validation
   ```
@@ -153,7 +152,7 @@ Evaluations
 
   The scripts for running the stratified 10-fold CV are split between ProD and the other FS as part of the development process, but they are essentially the same. Feel free to combine them.
 
-## Results from real datasets
+## Results from Real Datasets
 **Step 0**
 
 Download the datasets from the links provided in the paper, but for an exact reproduction, use the pickled datasets in `ProcessedDatasets.pkl`, zipped in `ProcessedDatasets.zip`. This will yield the following datasets:
@@ -182,27 +181,10 @@ Carry out feature selection with other feature selection methods implemented in 
 python3 real/featureSelection_real.py
 ```
 
-Also carry out feature selection with methods implemented in MATLAB:
- - real/matlabFS/
-
-
-**Step 1**
-
-Carry out feature selection with ProD:
-```
-python3 real/ProD_real.py
-```
-
-**Step 2**
-
-Carry out feature selection with feature selection methods implemented in MATLAB. The scripts are found in real/matlabFS. Adjust the paths to the datasets accordingly.
-
 **Step 3**
 
-Carry out feature selection with other feature selection methods implemented in Python:
-```
-python3 real/featureSelection_real.py
-```
+Carry out feature selection with feature selection methods implemented in MATLAB. The scripts are found in `real/matlabFS`. Adjust the paths to the datasets accordingly.
+
 
 **Step 4**
 
@@ -220,7 +202,7 @@ Carry out Leave-One-Out-Cross-Validation (LOOCV) on datasets using the features 
 python3 real/loocv.py
 ```
 
-Similarly, the argument `<selFeatures>` should be the path to the pickled Python file containing the ranking of top features from the other feature selection methods, that was output from **Step 1**.
+Similarly, the argument `<selFeatures>` should be the path to the pickled Python file containing the ranking of top features from the other feature selection methods, that was output from **Step 2**.
 
 **Step 6**
 
@@ -240,7 +222,7 @@ This will output the following files:
 - gait_LOOCV.csv
 - fsElapsedTimes.pkl
 
-## Results from NSL-KDD dataset
+## Results from NSL-KDD Dataset
 **Step 0**
 
 The NSL-KDD dataset is handled differently as it has a separate training and test dataset. The data can be downloaded [here][NSL-KDD]. Cite the paper by Tavallaee et al., 2009. Otherwise, unzip `real/NSL-KDD/DatasetNSL-KDD.zip`.
