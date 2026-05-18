@@ -37,7 +37,7 @@ for ds_i=1:length(datasetKeys)
 
   y = double(dataset.get('y').tolist())';
 
-  if ds_name == "geneExpressionCancerRNA"
+  if ds_name == "cancer"
       y = y+1;
   end
  

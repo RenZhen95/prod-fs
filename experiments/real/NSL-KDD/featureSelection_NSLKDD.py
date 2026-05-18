@@ -17,7 +17,7 @@ def get_indsTopnFeatures(_importances, _n):
     )[:_n]
 
 if len(sys.argv) < 2:
-    print("Possible usage: python3.11 featureSelection.py <folder>")
+    print("Possible usage: python3.11 featureSelection_NSLKDD.py <folder>")
     sys.exit(1)
 else:
     folder = Path(sys.argv[1])
@@ -84,6 +84,7 @@ rank_df["rank"] = np.arange(0, 16, 1)
 # FEATURE RANKING METHODS
 # From scikit-rebate (https://github.com/EpistasisLab/scikit-rebate)
 # ReliefF
+print("ReliefF")
 tRlfF_start = process_time()
 RlfF = ReliefF(n_neighbors=7, n_jobs=-1) # From Cai, 2014
 RlfF.fit(X, y)
@@ -91,6 +92,7 @@ tRlfF_stop = process_time()
 tRlfF = tRlfF_stop - tRlfF_start
 
 # MultiSURF
+print("MultiSURF")
 tMSurf_start = process_time()
 MSurf = MultiSURF(n_jobs=-1)
 MSurf.fit(X, y)
@@ -99,18 +101,21 @@ tMSurf = tMSurf_stop - tMSurf_start
 
 # From scikit-learn
 # Mutual Information
+print("Mutual Information")
 tMI_start = process_time()
 resMI = mutual_info_classif(X, y, n_neighbors=7, random_state=0)
 tMI_stop = process_time()
 tMI = tMI_stop - tMI_start
 
 # ANOVA F-value
+print("ANOVA-F")
 tFT_start = process_time()
 resFT_stat, resFT_p = f_classif(X, y)
 tFT_stop = process_time()
 tFT = tFT_stop - tFT_start
 
 # Random forest ensemble data mining to increase information gain/reduce impurity
+print("RFGini")
 tRF_start = process_time()
 rfGini = RandomForestClassifier(
     n_estimators=1000, criterion="gini", random_state=0, n_jobs=-1

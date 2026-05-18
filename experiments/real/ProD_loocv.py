@@ -19,7 +19,7 @@ from sklearn.metrics import balanced_accuracy_score
 
 if len(sys.argv) < 4:
     print(
-        "Possible usage: python3 PDE-S_loocv.py <processedDatasets> " +
+        "Possible usage: python3 ProD_loocv.py <processedDatasets> " +
         "<selFeatures> <saveFolder>"
     )
     sys.exit(1)
@@ -39,7 +39,7 @@ nRetainedFeatures = [25, 50, 75, 100]
 
 for ds in topFeatures.keys():
     print(f"Dataset: {ds}")
-    print(f" - Feature selection scheme: PDE-S")
+    print(f" - Feature selection scheme: ProD")
 
     ds_results = pd.DataFrame(columns=["kNN", "SVM", "Gaussian-NB", "LDA", "DT"])
 
@@ -47,6 +47,7 @@ for ds in topFeatures.keys():
         print(f" - Number of retained features: {n_}")
         X = processedDatasets_dict[ds]['X']
         y = processedDatasets_dict[ds]['y']
+
         inds_topFeatures = topFeatures[ds][:n_]
 
         X_reduced = X[:,inds_topFeatures]
@@ -117,12 +118,12 @@ for ds in topFeatures.keys():
                 ds_results,
                 pd.DataFrame(
                     data=[[balAcc_kNN, balAcc_SVM, balAcc_NBy, balAcc_LDA, balAcc_DT]],
-                    index=[f"PDE-S-{n_}"], columns=["kNN", "SVM", "Gaussian-NB", "LDA", "DT"]
+                    index=[f"ProD-{n_}"], columns=["kNN", "SVM", "Gaussian-NB", "LDA", "DT"]
                 )
             ]
         )
 
     # Saving results per dataset
-    ds_results.to_csv(saveFolder.joinpath(f"{ds}PDE-S_LOOCV.csv"))
+    ds_results.to_csv(saveFolder.joinpath(f"{ds}ProD_LOOCV.csv"))
 
 sys.exit(0)

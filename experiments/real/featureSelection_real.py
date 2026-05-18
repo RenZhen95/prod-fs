@@ -26,17 +26,17 @@ def get_indsTopnFeatures(featImportances, nCap):
 
     return inds_topFeatures
 
-if len(sys.argv) < 5:
+if len(sys.argv) < 4:
     print(
         "Possible usage: python3 featureSelection.py <processedDatasets> " +
-        "<nRetainedFeatures> <fsResults_matlab> <savefolder>"
+        "<fsResults_matlab> <savefolder>"
     )
     sys.exit(1)
 else:
     processedDatasets = Path(sys.argv[1])
-    nRetainedFeatures = int(sys.argv[2])
-    fsResults_matlab_folder = Path(sys.argv[3])
-    savefolder = Path(sys.argv[4])
+    fsResults_matlab_folder = Path(sys.argv[2])
+    savefolder = Path(sys.argv[3])
+    nRetainedFeatures = 100
 
 with open(processedDatasets, "rb") as handle:
     datasets_dict = pickle.load(handle)

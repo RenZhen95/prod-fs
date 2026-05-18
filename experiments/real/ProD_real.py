@@ -8,16 +8,15 @@ from collections import defaultdict
 
 from prod_fs import ProD
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 3:
     print(
-        "Possible usage: python3 ProD_real.py <processedDatasets> " +
-        "<nRetainedFeatures> <savefolder>"
+        "Possible usage: python3 ProD_real.py <processedDatasets> <savefolder>"
     )
     sys.exit(1)
 else:
     processedDatasets = Path(sys.argv[1])
-    nRetainedFeatures = int(sys.argv[2])
-    savefolder = Path(sys.argv[3])
+    savefolder = Path(sys.argv[2])
+    nRetainedFeatures = 100
 
 with open(processedDatasets, "rb") as handle:
     datasets_dict = pickle.load(handle)

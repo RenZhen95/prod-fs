@@ -18,17 +18,17 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.metrics import balanced_accuracy_score
 
 if len(sys.argv) < 3:
-    print("Possible usage: python3 traintest.py <datasetsFolder> <combinedfolder>")
+    print("Possible usage: python3 traintest.py <datasetsFolder> <ranks>")
     sys.exit(1)
 else:
     datasetsFolder = Path(sys.argv[1])
-    combinedfolder = Path(sys.argv[2])
+    ranks = Path(sys.argv[2])
 
 fsorder = [
     "RlfF", "MSurf", "IRlf", "LHRlf",
-    "RFGini", "MI", "mRMR", "FT", "PDE-S"
+    "RFGini", "MI", "mRMR", "FT", "ProD"
 ]
-feature_ranks = pd.read_csv(combinedfolder.joinpath("ranks.csv"), index_col=0)
+feature_ranks = pd.read_csv(ranks, index_col=0)
 
 Xtrain = pd.read_csv(datasetsFolder.joinpath("Xtrain20.csv"), index_col=0).values
 ytrain = pd.read_csv(datasetsFolder.joinpath("ytrain20.csv"), index_col=0)
