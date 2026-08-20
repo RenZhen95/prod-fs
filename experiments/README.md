@@ -165,7 +165,12 @@ Download the datasets from the links provided in the paper, but for an exact rep
 7. Cancer
 8. Gait
 
-The NSL-KDD dataset is handled differently as it has a separate training and test dataset. The dataset and code is found within the `real/NSL-KDD` folder. The dataset can be unzipped from `real/NSL-KDD/DatasetNSL-KDD.zip`. Steps to reproduce results for the NSL-KDD dataset is described in next section.
+The HAR, Epilepsy, and NSL-KDD datasets are handled differently as they have separate training and test datasets. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
+
+HAR: https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones
+Epilepsy: https://www.kaggle.com/datasets/yasserhessein/epileptic-seizure-recognition
+
+Steps to reproduce results for the HAR, Epilepsy, and NSL-KDD datasets are described in next section.
 
 **Step 1**
 
