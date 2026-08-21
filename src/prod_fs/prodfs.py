@@ -25,8 +25,14 @@ class ProD():
 
         bw_method : str, scalar or callable
          - The method used to calculate the estimator bandwith. This can be
-           'scott' and 'silverman', a scalar constant or a callable. For
-           more details, see scipy.stats.gaussian_kde documentation.
+           `scott`, `silverman`, `silverman_rot`, a scalar constant or a
+           callable. For more details, see scipy.stats.gaussian_kde
+           documentation.
+
+           Note that `silverman` refers to SciPy's implementation of
+           Silverman's suggestion for multivariate data, whereas
+           `silverman_rot` refers to our implementation of Silverman's
+           rule-of-thumb, which may be more robust in the univariate case.
 
         k : intpairwise
          - Compute the mean intersection area between (number of classes)
@@ -310,8 +316,15 @@ class ProD():
             _grid = self.XGrid
 
         for y in self.yLabels:
+            if isinstance(self.bw_method, str):
+                bw = self.get_bw(
+                    self.y_segregatedGroup[y][:,feat_idx], self.bw_method
+                )
+            else:
+                bw = self.bw_method
+
             kernel = gaussian_kde(
-                self.y_segregatedGroup[y][:,feat_idx], self.bw_method
+                self.y_segregatedGroup[y][:,feat_idx], bw_method=bw
             )
             kernels[y] = kernel
 
@@ -322,6 +335,46 @@ class ProD():
             return kernels, pdes, _grid
         elif self.mode == "release":
             return pdes, _grid
+
+    def get_bw(self, _sample, _custom_method):
+        """
+        Wrapper function to calculate bandwidth based on implemented methods.
+
+        Parameters
+        ----------
+        _sample : np.array
+         - Class-unique feature array
+
+        _custom_method : str
+         - Available options include (Update as of 21.08.2026)
+
+           1. `scott` : SciPy's built-in Scott's rule
+
+           2. `silverman` : SciPy's built-in Silverman's suggestion for
+                            multivariate data
+
+           3. `silverman_rot` : Silverman's rule-of-thumb for univariate data
+
+        Returns
+        -------
+        bw : float
+         - Bandwidth
+        """
+        sampleStd = _sample.std(ddof=1)
+
+        if _custom_method == "silverman_rot":
+            q75, q25 = np.percentile(_sample, [75, 25])
+            iqr = q75 - q25
+            A = min(sampleStd, iqr/1.34)
+
+            bw = 0.9 * A * len(_sample)**(-1/5) / sampleStd
+            # Because SciPy's gaussian_kde will multiply bandwidth with
+            # the sample standard deviation
+
+        else:
+            bw = _custom_method
+
+        return bw
 
     def segregateX_y(self):
         """

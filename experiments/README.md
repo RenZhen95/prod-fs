@@ -165,10 +165,17 @@ Download the datasets from the links provided in the paper, but for an exact rep
 7. Cancer
 8. Gait
 
-The HAR, Epilepsy, and NSL-KDD datasets are handled differently as they have separate training and test datasets. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
+The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
 
 HAR: https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones
+1. For HAR, there is a separate training and test dataset, just like NSL-KDD
+2. Note however, that the number of samples currently listed in Table 4 is only that of the training dataset for the NSL-KDD dataset, but it's the whole dataset for HAR. I suggest keeping with only reporting the samples in the training dataset
+
 Epilepsy: https://www.kaggle.com/datasets/yasserhessein/epileptic-seizure-recognition
+1. For Epilepsy, a separate test dataset is not provided, so let's go with 80/20
+
+TODO, note the following missing information in the current draft of the paper:
+1. Not stated for the NSL-KDD how many top features were retained (use rule of thumb by Canedo)
 
 Steps to reproduce results for the HAR, Epilepsy, and NSL-KDD datasets are described in next section.
 
