@@ -7,11 +7,11 @@ from collections import defaultdict
 
 if len(sys.argv) < 4:
     print(
-        "Possible usage: python3.11 evaluate_fss.py <resultsFolder> " +
+        "Possible usage: python3 evaluate_fss.py <resultsFolder> " +
         "<trueSignatures> <nTop>"
     )
     print(
-        "<resultsFolder> should be the folder with the combined ranks from all the " +
+        " - <resultsFolder> should be the folder with the combined ranks from all the " +
         "different FS methods."
     )
     sys.exit(1)

@@ -45,7 +45,7 @@ Carry out feature selection with ProD:
 python3 synthetic/Electrical/ProD_Electrical.py
 ```
 
-Save the output files in the ProD subfolder made in **Step 0**.
+Save the output files in the ProD subfolder made in **Step 1**.
 
 For the argument `<dataset_name>`, keep them consistent across the next few Python and MATLAB scripts. So for example use `ANDORdiscrete` for the ANDOR discrete datasets and make sure this is consistently used from Steps 2-5.
 
@@ -56,7 +56,7 @@ Carry out feature selection with other feature selection methods implemented in 
 python3 synthetic/Electrical/featureSelection_Electrical.py
 ```
 
-Save the output files in the OtherFS subfolder made in **Step 0**.
+Save the output files in the OtherFS subfolder made in **Step 1**.
 
 Also carry out feature selection with methods implemented in MATLAB:
 - synthetic/matlabFS/featureSelection_Electrical.m (I-Relief and LHR)
@@ -95,7 +95,7 @@ The SM datasets are generated according to the method proposed by [Diaz et al., 
 
 **Step 1**
 
-Create the following subfolders:
+In the SM directory, create the following subfolders:
 -  ProD
 -  OtherFS
 -  IRelief
@@ -144,6 +144,8 @@ Evaluations
 
   The `<trueSignatures_folder>` should be the path to the folder `trueSignatures` zipped in SM-Datasets.zip
 
+  To replicate the results in the paper, set <nTop> to 20
+
 - Classification accuracy via 10-fold stratified cross-validation
   ```
   python3 synthetic/SM/ProD_10stratifiedcv.py
@@ -167,11 +169,9 @@ Download the datasets from the links provided in the paper, but for an exact rep
 
 The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
 
-HAR: https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones
 1. For HAR, there is a separate training and test dataset, just like NSL-KDD
 2. Note however, that the number of samples currently listed in Table 4 is only that of the training dataset for the NSL-KDD dataset, but it's the whole dataset for HAR. I suggest keeping with only reporting the samples in the training dataset
 
-Epilepsy: https://www.kaggle.com/datasets/yasserhessein/epileptic-seizure-recognition
 1. For Epilepsy, a separate test dataset is not provided, so let's go with 80/20
 
 TODO, note the following missing information in the current draft of the paper:
@@ -280,3 +280,5 @@ The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step
 [SM]: <https://doi.org/10.1186/1471-2105-7-3>
 [SMDatasets]: <https://github.com/rdiaz02/varSelRF-suppl-mat>
 [NSL-KDD]: <https://www.kaggle.com/datasets/hassan06/nslkdd>
+[HAR]: <https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones>
+[Epilepsy]: <https://www.kaggle.com/datasets/yasserhessein/epileptic-seizure-recognition>

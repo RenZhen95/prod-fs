@@ -159,6 +159,7 @@ class ProD():
             )(feat_idx) for feat_idx in range(self.X.shape[1])
         )
         res = Parallel(n_jobs=self.n_jobs, verbose=0)(delayed_calls)
+
         if self.mode == "development":
             self.feature_kernels = []
             for item in res:
@@ -365,7 +366,13 @@ class ProD():
         if _custom_method == "silverman_rot":
             q75, q25 = np.percentile(_sample, [75, 25])
             iqr = q75 - q25
-            A = min(sampleStd, iqr/1.34)
+
+            # Exception for zero variance (especially when dealing with
+            # discrete values)
+            if iqr == 0:
+                A = sampleStd
+            else:
+                A = min(sampleStd, iqr/1.34)
 
             bw = 0.9 * A * len(_sample)**(-1/5) / sampleStd
             # Because SciPy's gaussian_kde will multiply bandwidth with

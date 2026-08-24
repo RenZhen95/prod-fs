@@ -53,7 +53,7 @@ def experiment_loop(bw_method, suffix):
     for n_obs in synthetic_datasets.keys():
         print(f"n_obs: {n_obs}")
         n_obs_datasets = synthetic_datasets[n_obs]
-    
+
         for i in n_obs_datasets.keys():
             print(f"Iteration {i} ... ")
             X = n_obs_datasets[i]['X']

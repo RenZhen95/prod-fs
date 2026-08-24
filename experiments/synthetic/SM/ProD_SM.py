@@ -48,76 +48,83 @@ yfolder = datasetFolder.joinpath('y')
 
 
 # === === === ===
-# Carrying out feature selection for each dataset
-# 4 iterations x 3 classes
-elapsed_times = pd.DataFrame(
-    data=np.zeros((4*3, 3)),
-    columns=["ProD", "iteration", "nClass"]
-)
+# Update: 08.2026 - As response to reviewer, experiment with ProD, using
+# Silverman's rule-of-thumb as a bandwidth estimate
+def experiment_loop(bw_method, suffix):
+    # Carrying out feature selection for each dataset
+    # 4 iterations x 3 classes
+    elapsed_times = pd.DataFrame(
+        data=np.zeros((4*3, 3)),
+        columns=[f"ProD-{suffix}", "iteration", "nClass"]
+    )
+    
+    scores_df = pd.DataFrame(
+        data=np.zeros((4*3*4060, 4)),
+        columns=["feature", f"ProD-{suffix}", "iteration", "nClass"]
+    )
+    scores_df["feature"] = np.tile(np.arange(0, 4060, 1), 12)
+    
+    rank_df = pd.DataFrame(
+        data=np.zeros((4*3*120, 4)),
+        columns=["rank", f"ProD-{suffix}", "iteration", "nClass"]
+    )
+    rank_df["rank"] = np.tile(np.arange(0, 120, 1), 12)
+    
+    count_time = 0
+    count = 0
+    count_r = 0
+    
+    for sel_idxs in [nClass2_sel_idx, nClass3_sel_idx, nClass4_sel_idx]:
+        for d_itr, d_idx in enumerate(sel_idxs):
+            X = pd.read_csv(Xfolder.joinpath(f"{d_idx+1}_X.csv"), sep='\s+', header=None)
+            X = X.values
+            y = pd.read_csv(yfolder.joinpath(f"{d_idx+1}_y.csv"), header=None)
+            y = y.to_numpy().reshape(-1)
+    
+            nClass = len(list(set(y)))
+            print(f"nClass: {nClass} ... | iteration: {d_itr}")
+    
+            # Proposed algorithm
+            tProD_start = process_time()
+            prodRanker = ProD(
+                integration_method="trapz", delta=500, bw_method=bw_method,
+                k=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5
+            )
+            prodRanker.fit(X, y)
+            tProD_stop = process_time()
+            tProD = tProD_stop - tProD_start
+    
+            # === === === === === === ===
+            # GETTING TOP N FEATURES
+            rank_df.loc[count_r:count_r+119, f"ProD-{suffix}"] = prodRanker.get_topnFeatures(
+                nRetainedFeatures
+            )
+            rank_df.loc[count_r:count_r+119, "iteration"] = np.repeat([d_itr], 120)
+            rank_df.loc[count_r:count_r+119, "nClass"] = np.repeat([nClass], 120)
+            count_r += 120
+    
+            scores_df.loc[count:count+4059, f"ProD-{suffix}"] = prodRanker.feature_importances_
+            scores_df.loc[count:count+4059, "iteration"] = np.repeat([d_itr], 4060)
+            scores_df.loc[count:count+4059, "nClass"] = np.repeat([nClass], 4060)
+            count += 4060
+    
+            # === === === === === === ===
+            # GET ELAPSED TIME
+            elapsed_times.at[count_time, f"ProD-{suffix}"] = tProD
+            elapsed_times.at[count_time, "iteration"] = d_itr
+            elapsed_times.at[count_time, "nClass"] = nClass
+            count_time += 1
+    
+    with open(f"SMProD-{suffix}_ranks.pkl", "wb") as handle:
+        pickle.dump(rank_df, handle)
+    
+    with open(f"SMProD-{suffix}_feature_scores.pkl", "wb") as handle:
+        pickle.dump(scores_df, handle)
+    
+    elapsed_times.to_csv(f"SMProD-{suffix}_elapsed_times.csv", sep=',')
 
-scores_df = pd.DataFrame(
-    data=np.zeros((4*3*4060, 4)),
-    columns=["feature", "ProD", "iteration", "nClass"]
-)
-scores_df["feature"] = np.tile(np.arange(0, 4060, 1), 12)
-
-rank_df = pd.DataFrame(
-    data=np.zeros((4*3*120, 4)),
-    columns=["rank", "ProD", "iteration", "nClass"]
-)
-rank_df["rank"] = np.tile(np.arange(0, 120, 1), 12)
-
-count_time = 0
-count = 0
-count_r = 0
-
-for sel_idxs in [nClass2_sel_idx, nClass3_sel_idx, nClass4_sel_idx]:
-    for d_itr, d_idx in enumerate(sel_idxs):
-        X = pd.read_csv(Xfolder.joinpath(f"{d_idx+1}_X.csv"), sep='\s+', header=None)
-        X = X.values
-        y = pd.read_csv(yfolder.joinpath(f"{d_idx+1}_y.csv"), header=None)
-        y = y.to_numpy().reshape(-1)
-
-        nClass = len(list(set(y)))
-        print(f"nClass: {nClass} ... | iteration: {d_itr}")
-
-        # Proposed algorithm
-        tProD_start = process_time()
-        prodRanker = ProD(
-            integration_method="trapz", delta=500, bw_method="scott",
-            k=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5
-        )
-        prodRanker.fit(X, y)
-        tProD_stop = process_time()
-        tProD = tProD_stop - tProD_start
-
-        # === === === === === === ===
-        # GETTING TOP N FEATURES
-        rank_df.loc[count_r:count_r+119, "ProD"] = prodRanker.get_topnFeatures(
-            nRetainedFeatures
-        )
-        rank_df.loc[count_r:count_r+119, "iteration"] = np.repeat([d_itr], 120)
-        rank_df.loc[count_r:count_r+119, "nClass"] = np.repeat([nClass], 120)
-        count_r += 120
-
-        scores_df.loc[count:count+4059, "ProD"] = prodRanker.feature_importances_
-        scores_df.loc[count:count+4059, "iteration"] = np.repeat([d_itr], 4060)
-        scores_df.loc[count:count+4059, "nClass"] = np.repeat([nClass], 4060)
-        count += 4060
-
-        # === === === === === === ===
-        # GET ELAPSED TIME
-        elapsed_times.at[count_time, "ProD"] = tProD
-        elapsed_times.at[count_time, "iteration"] = d_itr
-        elapsed_times.at[count_time, "nClass"] = nClass
-        count_time += 1
-
-with open("SMProD_ranks.pkl", "wb") as handle:
-    pickle.dump(rank_df, handle)
-
-with open("SMProD_feature_scores.pkl", "wb") as handle:
-    pickle.dump(scores_df, handle)
-
-elapsed_times.to_csv("SMProD_elapsed_times.csv", sep=',')
+# Call experiment loop
+experiment_loop("scott", "Sco")
+experiment_loop("silverman_rot", "Slv")
 
 sys.exit(0)

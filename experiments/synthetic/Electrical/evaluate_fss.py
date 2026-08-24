@@ -6,11 +6,18 @@ from pathlib import Path
 
 if len(sys.argv) < 3:
     print(
-        "Possible usage: python3.11 evaluate_fss.py <resultsFolder> <datasetName>"
+        "Possible usage: python3 evaluate_fss.py <resultsFolder> <datasetName>"
     )
     print(
-        "<resultsFolder> should be the folder with the combined ranks from all the " +
+        " - <resultsFolder> should be the folder with the combined ranks from all the " +
         "different FS methods."
+    )
+    print(
+        " - <datasetName> should be the name of the dataset, either:\n" +
+        "   > ADDERcontinuous\n" +
+        "   > ANDORcontinuous\n" +
+        "   > ADDERdiscrete\n" +
+        "   > ANDORdiscrete"
     )
     sys.exit(1)
 else:
