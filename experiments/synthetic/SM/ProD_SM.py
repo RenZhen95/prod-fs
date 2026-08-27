@@ -125,6 +125,6 @@ def experiment_loop(bw_method, suffix):
 
 # Call experiment loop
 experiment_loop("scott", "Sco")
-experiment_loop("silverman_rot", "Slv")
+experiment_loop("customSilverman", "Slv")
 
 sys.exit(0)

@@ -26,7 +26,7 @@ else:
 
 fsorder = [
     "RlfF", "MSurf", "IRlf", "LHRlf",
-    "RFGini", "MI", "mRMR", "FT", "ProD"
+    "RFGini", "MI", "mRMR", "FT", "ProD-Sco", "ProD-Slv"
 ]
 feature_ranks = pd.read_csv(ranks, index_col=0)
 

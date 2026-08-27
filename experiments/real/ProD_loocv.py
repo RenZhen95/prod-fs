@@ -17,16 +17,23 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from sklearn.metrics import balanced_accuracy_score
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 5:
     print(
         "Possible usage: python3 ProD_loocv.py <processedDatasets> " +
-        "<selFeatures> <saveFolder>"
+        "<selFeatures_pkl> <suffix> <saveFolder>"
+    )
+    print(
+        "To replicate the experiments in the paper, the following arguments " +
+        "should take the following options.\n" +
+        " - <suffix> : 'Sco' if <bw_method>='scott' or\n" +
+        "              'Slv' if <bw_method>='customSilverman'"
     )
     sys.exit(1)
 else:
     processedDatasets_pkl = Path(sys.argv[1])
     selFeatures_pkl = Path(sys.argv[2])
-    saveFolder = Path(sys.argv[3])
+    suffix = sys.argv[3]
+    saveFolder = Path(sys.argv[4])
 
 with open(processedDatasets_pkl, "rb") as handle:
     processedDatasets_dict = pickle.load(handle)
@@ -124,6 +131,6 @@ for ds in topFeatures.keys():
         )
 
     # Saving results per dataset
-    ds_results.to_csv(saveFolder.joinpath(f"{ds}ProD_LOOCV.csv"))
+    ds_results.to_csv(saveFolder.joinpath(f"{ds}ProD-{suffix}_LOOCV.csv"))
 
 sys.exit(0)

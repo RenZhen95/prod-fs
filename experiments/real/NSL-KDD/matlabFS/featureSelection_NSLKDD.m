@@ -1,7 +1,7 @@
 % mRMR by Ding, 2005
 clear; clc
 
-cd('../DatasetNSL-KDD/')
+cd('../data/')
 X = readtable('Xtrain20.csv');
 X = X(:,2:size(X, 2));
 y = readtable('ytrain20.csv');

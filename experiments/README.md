@@ -167,15 +167,11 @@ Download the datasets from the links provided in the paper, but for an exact rep
 7. Cancer
 8. Gait
 
-The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
+The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets.
 
-1. For HAR, there is a separate training and test dataset, just like NSL-KDD
-2. Note however, that the number of samples currently listed in Table 4 is only that of the training dataset for the NSL-KDD dataset, but it's the whole dataset for HAR. I suggest keeping with only reporting the samples in the training dataset
+For the Epilepsy dataset, a separate test dataset is not provided but since the number of samples available is large enough, the data is split 80/20 in a stratified manner for training and testing, respectively.
 
-1. For Epilepsy, a separate test dataset is not provided, so let's go with 80/20
-
-TODO, note the following missing information in the current draft of the paper:
-1. Not stated for the NSL-KDD how many top features were retained (use rule of thumb by Canedo)
+The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
 
 Steps to reproduce results for the HAR, Epilepsy, and NSL-KDD datasets are described in next section.
 
@@ -234,27 +230,44 @@ This will output the following files:
 - gait_LOOCV.csv
 - fsElapsedTimes.pkl
 
-## Results from NSL-KDD Dataset
+## Results from HAR, NSL-KDD and Epilepsy Datasets
+
 **Step 0**
 
-The NSL-KDD dataset is handled differently as it has a separate training and test dataset. The data can be downloaded [here][NSL-KDD]. Cite the paper by Tavallaee et al., 2009. Otherwise, unzip `real/NSL-KDD/DatasetNSL-KDD.zip`.
+The HAR and NSL-KDD datasets are handled differently as they have separate training and test datasets. The Epilepsy dataset does not, but since an ample number of samples are available, the dataset is split in training and test datasets with the script below.
+
+```
+python3 real/Epilepsy/split_data.py
+```
+
+The original data can be downloaded [here (NSL-KDD)][NSL-KDD], [here (HAR)][HAR], and [here (Epilepsy)][Epilepsy] for the NSL-KDD, HAR, and Epilepsy datasets, respectively. However, we recommend one to simply unzip `data.zip` in the  respective folders.
 
 **Step 1**
 
 Carry out feature selection with ProD:
 ```
-python3 real/NSL-KDD/ProD_NSLKDD.py
+python3 real/NSL-KDD/ProD_NSLKDD.py    # for the NSL-KDD dataset
+python3 real/HAR/ProD_HAR.py           # for the HAR dataset
+python3 real/Epilepsy/ProD_Epilepsy.py # for the Epilepsy dataset
 ```
 
 **Step 2**
 
-Carry out feature selection with feature selection methods implemented in MATLAB. The script needed is `real/NSL-KDD/matlabFS/featureSelection_NSLKDD.m`. Adjust the paths to the datasets accordingly.
+Carry out feature selection with feature selection methods implemented in MATLAB. The scripts needed are:
+
+- `real/NSL-KDD/matlabFS/featureSelection_NSLKDD.m`
+- `real/HAR/matlabFS/featureSelection_HAR.m`
+- `real/Epilepsy/matlabFS/featureSelection_Epilepsy.m`
+
+Adjust the paths to the datasets in the script accordingly.
 
 **Step 3**
 
 Carry out feature selection with other feature selection methods implemented in Python:
 ```  
-python3 real/NSL-KDD/featureSelection_NSLKDD.py
+python3 real/NSL-KDD/featureSelection_NSLKDD.py    # for the NSL-KDD dataset
+python3 real/HAR/featureSelection_HAR.py           # for the HAR dataset
+python3 real/Epilepsy/featureSelection_Epilepsy.py # for the Epilepsy dataset
 ```
 
 **Step 4**
@@ -264,13 +277,16 @@ Combine all the feature scores/rankings from the different feature selection met
 python3 real/NSL-KDD/combine_fss.py
 ```
 
+The `combine_fss.py` script can be found in all the respective folders.
+
 **Step 5**
+
 Train classifiers based on features selected
 ```
 python3 real/NSL-KDD/traintest.py
 ```
 
-The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step 4**.
+The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step 4**. Similarly, the `traintest.py` script can be found in all the respective folders.
 
 [syntElectrical]: <https://doi.org/10.48550/arXiv.2211.03035>
 [IRlf]: <https://doi.org/10.1109/TPAMI.2009.190>
