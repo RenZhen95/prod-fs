@@ -7,11 +7,11 @@ clear; clc
 pickle = py.importlib.import_module('pickle');
 
 % Modify file location accordingly
-cd('../../../../datasets/synthetic/Electrical/')
+cd('../Electrical/')
 
 % Modify dataset name accordingly
-datasetname = "ANDORcontinuous";
-%datasetname = "ADDERcontinuous";
+%datasetname = "ANDORcontinuous";
+datasetname = "ADDERcontinuous";
 
 handle = py.open(datasetname + "_datasets.pkl", 'rb');
 processedDatasets_dict = pickle.load(handle);
@@ -118,7 +118,7 @@ writematrix(t_mRMR, datasetname + "tmRMR.csv");
 
 function featureCol = discretize_feature(col, uE, lE)
   featureCol = zeros(size(col));
-  for r=1:size(col)
+  for r=1:size(col,1)
       if col(r) > uE
           featureCol(r) = 1;
       elseif col(r) < lE

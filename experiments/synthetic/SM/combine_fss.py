@@ -4,21 +4,13 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-if len(sys.argv) < 2:
-    print(
-        "Possible usage: python3.11 combine_fss.py <folder>"
-    )
-    sys.exit(1)
-else:
-    folder = Path(sys.argv[1])
-
 # === === === ===
 # Feature Scores (other FS)
-with open(folder.joinpath("OtherFS/SMfeature_scores.pkl"), "rb") as handle:
+with open("OtherFS/SMfeature_scores.pkl", "rb") as handle:
     pyFSS_featurescores = pickle.load(handle)
 
 # Reading weights from IRelief
-IRlf_folder = folder.joinpath("IRelief")
+IRlf_folder = Path("IRelief")
 IRlf_nClass2 = pd.read_csv(
     IRlf_folder.joinpath("WeightsI_nClass2.csv"), header=None
 )
@@ -44,7 +36,7 @@ for IRlf_featurescores in [
 pyFSS_featurescores["IRlf"] = IRlf
 
 # Reading weights from LHRelief
-LHRlf_folder = folder.joinpath("LHRelief")
+LHRlf_folder = Path("LHRelief")
 LHRlf_nClass2 = pd.read_csv(
     LHRlf_folder.joinpath("WeightsLM_nClass2.csv"), header=None
 )
@@ -70,22 +62,25 @@ for LHRlf_featurescores in [
 pyFSS_featurescores["LHRlf"] = LHRlf
 
 # Reading scores from ProD
-with open(folder.joinpath(f"ProD/SMProD_feature_scores.pkl"), "rb") as handle:
-    pdes_featurescores = pickle.load(handle)
+with open(f"ProD/SMProD-Sco_feature_scores.pkl", "rb") as handle:
+    prodScott_featurescores = pickle.load(handle)
+with open(f"ProD/SMProD-Slv_feature_scores.pkl", "rb") as handle:
+    prodSilverman_featurescores = pickle.load(handle)
 
-pyFSS_featurescores["ProD"] = pdes_featurescores["ProD"]
+pyFSS_featurescores["ProD-Sco"] = prodScott_featurescores["ProD-Sco"]
+pyFSS_featurescores["ProD-Slv"] = prodSilverman_featurescores["ProD-Slv"]
 
 
 # === === === ===
 # Ranks
-with open(folder.joinpath("OtherFS/SMranks.pkl"), "rb") as handle:
+with open("OtherFS/SMranks.pkl", "rb") as handle:
     pyFSS_ranks = pickle.load(handle)
 
 # Reading ranks from mRMR (Ding, 2005)
 # Minus 1 because MATLAB indexing starts from 1 and not 0
 # From MATLAB documentation:
 #   If idx(3) is 5 :: The third most important featurey is the 10th column
-mRMR_folder = folder.joinpath("mRMR")
+mRMR_folder = Path("mRMR")
 mRMR_nClass2 = pd.read_csv(
     mRMR_folder.joinpath("mRMR_nClass2.csv"), header=None
 )
@@ -174,38 +169,32 @@ for mRMR_ranks_df in [mRMR_nClass2_120, mRMR_nClass3_120, mRMR_nClass4_120]:
             i += 1
 pyFSS_ranks["mRMR"] = mRMR_ranks
 
-
 # Reading ranks from ProD
-with open(folder.joinpath(f"ProD/SMProD_ranks.pkl"), "rb") as handle:
-    pdes_ranks = pickle.load(handle)
+with open(f"ProD/SMProD-Sco_ranks.pkl", "rb") as handle:
+    prodScott_ranks = pickle.load(handle)
+with open(f"ProD/SMProD-Slv_ranks.pkl", "rb") as handle:
+    prodSilverman_ranks = pickle.load(handle)
 
-pyFSS_ranks["ProD"] = pdes_ranks["ProD"]
+pyFSS_ranks["ProD-Sco"] = prodScott_ranks["ProD-Sco"]
+pyFSS_ranks["ProD-Slv"] = prodSilverman_ranks["ProD-Slv"]
 
 
 # === === === ===
 # Elapsed Times
-py_times = pd.read_csv(
-    folder.joinpath("OtherFS/SMelapsed_times.csv"), index_col=0
-)
-IRlf_times = pd.read_csv(
-    IRlf_folder.joinpath("tI.csv"), header=None
-)
-LHRlf_times = pd.read_csv(
-    LHRlf_folder.joinpath("tLM.csv"), header=None
-)
-mRMR_times = pd.read_csv(
-    mRMR_folder.joinpath("tmRMR.csv"), header=None
-)
-pdes_times = pd.read_csv(
-    folder.joinpath(f"ProD/SMProD_elapsed_times.csv"), index_col=0
-)
+py_times = pd.read_csv("OtherFS/SMelapsed_times.csv", index_col=0)
+IRlf_times = pd.read_csv(IRlf_folder.joinpath("tI.csv"), header=None)
+LHRlf_times = pd.read_csv(LHRlf_folder.joinpath("tLM.csv"), header=None)
+mRMR_times = pd.read_csv(mRMR_folder.joinpath("tmRMR.csv"), header=None)
+prodScott_times = pd.read_csv(f"ProD/SMProD-Sco_elapsed_times.csv", index_col=0)
+prodSilverman_times = pd.read_csv(f"ProD/SMProD-Slv_elapsed_times.csv", index_col=0)
 py_times["IRlf"]  = IRlf_times.stack().values
 py_times["LHRlf"] = LHRlf_times.stack().values
 py_times["mRMR"] = mRMR_times.stack().values
-py_times["ProD"] = pdes_times["ProD"]
+py_times["ProD-Sco"] = prodScott_times["ProD-Sco"]
+py_times["ProD-Slv"] = prodSilverman_times["ProD-Slv"]
 
-pyFSS_featurescores.to_csv(folder.joinpath("Combined/SMfeaturescores.csv"))
-pyFSS_ranks.to_csv(folder.joinpath("Combined/SMranks.csv"))
-py_times.to_csv(folder.joinpath("Combined/SMelapsedtimes.csv"))
+pyFSS_featurescores.to_csv("Combined/SMfeaturescores.csv")
+pyFSS_ranks.to_csv("Combined/SMranks.csv")
+py_times.to_csv("Combined/SMelapsedtimes.csv")
 
 sys.exit(0)

@@ -6,7 +6,17 @@ from pathlib import Path
 
 if len(sys.argv) < 3:
     print(
-        "Possible usage: python3.11 combine_fss.py <folder> <dataset>"
+        "Possible usage: python3 combine_fss.py <folder> <dataset>"
+    )
+    print(
+        " - <folder> should be the path to the folder made in Step 1"
+    )
+    print(
+        " - <dataset> should be the name of the dataset, either:\n" +
+        "   > ADDERcontinuous\n" +
+        "   > ANDORcontinuous\n" +
+        "   > ADDERdiscrete\n" +
+        "   > ANDORdiscrete"
     )
     sys.exit(1)
 else:        
@@ -71,10 +81,13 @@ for LHRlf_featurescores in [
 pyFSS_featurescores["LHRlf"] = LHRlf
 
 # Reading scores from ProD
-with open(folder.joinpath(f"ProD/{dataset}ProD_feature_scores.pkl"), "rb") as handle:
-    pdes_featurescores = pickle.load(handle)
+with open(folder.joinpath(f"ProD/{dataset}ProD-Sco_feature_scores.pkl"), "rb") as handle:
+    prodScott_featurescores = pickle.load(handle)
+with open(folder.joinpath(f"ProD/{dataset}ProD-Slv_feature_scores.pkl"), "rb") as handle:
+    prodSilverman_featurescores = pickle.load(handle)
 
-pyFSS_featurescores["ProD"] = pdes_featurescores["ProD"]
+pyFSS_featurescores["ProD-Sco"] = prodScott_featurescores["ProD-Sco"]
+pyFSS_featurescores["ProD-Slv"] = prodSilverman_featurescores["ProD-Slv"]
 
 
 # === === === ===
@@ -176,10 +189,13 @@ for mRMR_ranks_df in [mRMR_30_10, mRMR_50_10, mRMR_70_10]:
 pyFSS_ranks["mRMR"] = mRMR_ranks
 
 # Reading ranks from ProD
-with open(folder.joinpath(f"ProD/{dataset}ProD_ranks.pkl"), "rb") as handle:
-    pdes_ranks = pickle.load(handle)
+with open(folder.joinpath(f"ProD/{dataset}ProD-Sco_ranks.pkl"), "rb") as handle:
+    prodScott_ranks = pickle.load(handle)
+with open(folder.joinpath(f"ProD/{dataset}ProD-Slv_ranks.pkl"), "rb") as handle:
+    prodSilverman_ranks = pickle.load(handle)
 
-pyFSS_ranks["ProD"] = pdes_ranks["ProD"]
+pyFSS_ranks["ProD-Sco"] = prodScott_ranks["ProD-Sco"]
+pyFSS_ranks["ProD-Slv"] = prodSilverman_ranks["ProD-Slv"]
 
 
 # === === === ===
@@ -196,13 +212,17 @@ LHRlf_times = pd.read_csv(
 mRMR_times = pd.read_csv(
     mRMR_folder.joinpath(f"{dataset}tmRMR.csv"), header=None
 )
-pdes_times = pd.read_csv(
-    folder.joinpath(f"ProD/{dataset}ProD_elapsed_times.csv"), index_col=0
+prodScott_times = pd.read_csv(
+    folder.joinpath(f"ProD/{dataset}ProD-Sco_elapsed_times.csv"), index_col=0
+)
+prodSilverman_times = pd.read_csv(
+    folder.joinpath(f"ProD/{dataset}ProD-Slv_elapsed_times.csv"), index_col=0
 )
 py_times["IRlf"]  = IRlf_times.stack().values
 py_times["LHRlf"] = LHRlf_times.stack().values
 py_times["mRMR"] = mRMR_times.stack().values
-py_times["ProD"] = pdes_times["ProD"]
+py_times["ProD-Sco"] = prodScott_times["ProD-Sco"]
+py_times["ProD-Slv"] = prodSilverman_times["ProD-Slv"]
 
 pyFSS_featurescores.to_csv(
     folder.joinpath(f"Combined/{dataset}_featurescores.csv")

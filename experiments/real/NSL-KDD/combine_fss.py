@@ -6,7 +6,7 @@ from pathlib import Path
 
 if len(sys.argv) < 2:
     print(
-        "Possible usage: python3.11 combine_fss.py <matlabFSFolder>"
+        "Possible usage: python3 combine_fss.py <matlabFSFolder>"
     )
     sys.exit(1)
 else:        
@@ -29,8 +29,10 @@ LHRlf_featurescores = pd.read_csv(
 scores_df["LHRlf"] = LHRlf_featurescores
 
 # Reading scores from ProD
-prod_featurescores = pd.read_csv("ProD_scores_df.csv", index_col=0)
-scores_df["ProD"] = prod_featurescores["ProD"]
+prodScott_featurescores = pd.read_csv("ProD-Sco_scores_df.csv", index_col=0)
+scores_df["ProD-Sco"] = prodScott_featurescores["ProD-Sco"]
+prodSilverman_featurescores = pd.read_csv("ProD-Slv_scores_df.csv", index_col=0)
+scores_df["ProD-Slv"] = prodSilverman_featurescores["ProD-Slv"]
 
 # === === === ===
 # Ranks
@@ -90,8 +92,10 @@ ranks_df["mRMR"] = mRMR_rank
 
 # === === === ===
 # Reading scores from ProD
-prod_ranks = pd.read_csv("ProD_rank.csv", index_col=0)
-ranks_df["ProD"] = prod_ranks["ProD"]
+prodScott_ranks = pd.read_csv("ProD-Sco_rank.csv", index_col=0)
+ranks_df["ProD-Sco"] = prodScott_ranks["ProD-Sco"]
+prodSilverman_ranks = pd.read_csv("ProD-Slv_rank.csv", index_col=0)
+ranks_df["ProD-Slv"] = prodSilverman_ranks["ProD-Slv"]
 
 # === === === ===
 # Elapsed Times
@@ -105,11 +109,13 @@ LHRlf_times = pd.read_csv(
 mRMR_times = pd.read_csv(
     matlabFSFolder.joinpath("NSLKDD_tmRMR.csv"), header=None
 )
-prod_times = pd.read_csv("ProD_elapsed_times.csv", index_col=0)
+prodScott_times = pd.read_csv("ProD-Sco_elapsed_times.csv", index_col=0)
+prodSilverman_times = pd.read_csv("ProD-Slv_elapsed_times.csv", index_col=0)
 py_times["IRlf"] = IRlf_times.values[0,0]
 py_times["LHRlf"] = LHRlf_times.values[0,0]
 py_times["mRMR"] = mRMR_times.values[0,0]
-py_times["ProD"] = prod_times.at["ProD",'0']
+py_times["ProD-Sco"] = prodScott_times.at["ProD-Sco",'0']
+py_times["ProD-Slv"] = prodSilverman_times.at["ProD-Slv",'0']
 
 scores_df.to_csv("featurescores.csv")
 ranks_df.to_csv("ranks.csv")

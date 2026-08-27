@@ -24,7 +24,7 @@ This will produce four Python-pickled binary files:
 - ANDOR discrete datasets
 - ADDER discrete datasets
 
-Generated datasets might show random variations due to how computers handle randomness. For an exact reproduction, use the datasets in `Electrical-Datasets.zip`.
+Generated datasets might show random variations due to how computers handle randomness. For an exact reproduction, use the datasets in `Electrical-Datasets.zip` found in respective Electrical folder.
 
 **Step 1**
 
@@ -45,7 +45,7 @@ Carry out feature selection with ProD:
 python3 synthetic/Electrical/ProD_Electrical.py
 ```
 
-Save the output files in the ProD subfolder made in **Step 0**.
+Save the output files in the ProD subfolder made in **Step 1**.
 
 For the argument `<dataset_name>`, keep them consistent across the next few Python and MATLAB scripts. So for example use `ANDORdiscrete` for the ANDOR discrete datasets and make sure this is consistently used from Steps 2-5.
 
@@ -56,7 +56,7 @@ Carry out feature selection with other feature selection methods implemented in 
 python3 synthetic/Electrical/featureSelection_Electrical.py
 ```
 
-Save the output files in the OtherFS subfolder made in **Step 0**.
+Save the output files in the OtherFS subfolder made in **Step 1**.
 
 Also carry out feature selection with methods implemented in MATLAB:
 - synthetic/matlabFS/featureSelection_Electrical.m (I-Relief and LHR)
@@ -91,11 +91,11 @@ Evaluations
 ### SM Datasets
 **Step 0**
 
-The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder `SM-Datasets.zip` to use the datasets used in our paper, which have been preprocessed to better suit our "style".
+The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder `data.zip` in the respective SM folder to use the datasets used in our paper, which have been preprocessed to better suit our "style".
 
 **Step 1**
 
-Create the following subfolders:
+In the SM directory, create the following subfolders:
 -  ProD
 -  OtherFS
 -  IRelief
@@ -110,7 +110,7 @@ Carry out feature selection with ProD:
 python3 synthetic/SM/ProD_SM.py
 ```
 
-Save the output files in the ProD subfolder made in **Step 0**.
+Save the output files in the ProD subfolder made in **Step 1**.
 
 **Step 3**
 
@@ -119,13 +119,13 @@ Carry out feature selection with other feature selection methods implemented in 
 python3 synthetic/SM/featureSelection_SM.py
 ```
 
-Save the output files in the OtherFS subfolder made in **Step 0**.
+Save the output files in the OtherFS subfolder made in **Step 1**.
 
 Also carry out feature selection with methods implemented in MATLAB:
 - synthetic/matlabFS/featureSelection_SM.m (I-Relief and LHR)
 - synthetic/matlabFS/featureSelection_mRMR_SM.m (mRMR)
 
-Save the corresponding output files in the IRelief, LHRelief, and mRMR subfolders made in **Step 0**.
+Save the corresponding output files in the IRelief, LHRelief, and mRMR subfolders made in **Step 1**.
 
 **Step 4**
 
@@ -142,7 +142,9 @@ Evaluations
   python3 synthetic/SM/evaluate_fss.py
   ```
 
-  The `<trueSignatures_folder>` should be the path to the folder `trueSignatures` zipped in SM-Datasets.zip
+  The `<trueSignatures_folder>` should be the path to the folder `trueSignatures` zipped in `data.zip`
+
+  To replicate the results in the paper, set <nTop> to 20
 
 - Classification accuracy via 10-fold stratified cross-validation
   ```
@@ -165,7 +167,7 @@ Download the datasets from the links provided in the paper, but for an exact rep
 7. Cancer
 8. Gait
 
-The NSL-KDD dataset is handled differently as it has a separate training and test dataset. The dataset and code is found within the `real/NSL-KDD` folder. The dataset can be unzipped from `real/NSL-KDD/DatasetNSL-KDD.zip`. Steps to reproduce results for the NSL-KDD dataset is described in next section.
+The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets. For the Epilepsy dataset, a separate test dataset is not provided but since the number of samples available is large enough, the data is split 80/20 in a stratified manner for training and testing, respectively. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders. The steps to reproduce results for the HAR, Epilepsy, and NSL-KDD datasets are described in next section.
 
 **Step 1**
 
@@ -222,27 +224,44 @@ This will output the following files:
 - gait_LOOCV.csv
 - fsElapsedTimes.pkl
 
-## Results from NSL-KDD Dataset
+## Results from HAR, NSL-KDD and Epilepsy Datasets
+
 **Step 0**
 
-The NSL-KDD dataset is handled differently as it has a separate training and test dataset. The data can be downloaded [here][NSL-KDD]. Cite the paper by Tavallaee et al., 2009. Otherwise, unzip `real/NSL-KDD/DatasetNSL-KDD.zip`.
+The HAR and NSL-KDD datasets are handled differently as they have separate training and test datasets. The Epilepsy dataset does not, but since an ample number of samples are available, the dataset is split in training and test datasets with the script below.
+
+```
+python3 real/Epilepsy/split_data.py
+```
+
+The original data can be downloaded [here (NSL-KDD)][NSL-KDD], [here (HAR)][HAR], and [here (Epilepsy)][Epilepsy] for the NSL-KDD, HAR, and Epilepsy datasets, respectively. However, we recommend one to simply unzip `data.zip` in the  respective folders.
 
 **Step 1**
 
 Carry out feature selection with ProD:
 ```
-python3 real/NSL-KDD/ProD_NSLKDD.py
+python3 real/NSL-KDD/ProD_NSLKDD.py    # for the NSL-KDD dataset
+python3 real/HAR/ProD_HAR.py           # for the HAR dataset
+python3 real/Epilepsy/ProD_Epilepsy.py # for the Epilepsy dataset
 ```
 
 **Step 2**
 
-Carry out feature selection with feature selection methods implemented in MATLAB. The script needed is `real/NSL-KDD/matlabFS/featureSelection_NSLKDD.m`. Adjust the paths to the datasets accordingly.
+Carry out feature selection with feature selection methods implemented in MATLAB. The scripts needed are:
+
+- `real/NSL-KDD/matlabFS/featureSelection_NSLKDD.m`
+- `real/HAR/matlabFS/featureSelection_HAR.m`
+- `real/Epilepsy/matlabFS/featureSelection_Epilepsy.m`
+
+Adjust the paths to the datasets in the script accordingly.
 
 **Step 3**
 
 Carry out feature selection with other feature selection methods implemented in Python:
 ```  
-python3 real/NSL-KDD/featureSelection_NSLKDD.py
+python3 real/NSL-KDD/featureSelection_NSLKDD.py    # for the NSL-KDD dataset
+python3 real/HAR/featureSelection_HAR.py           # for the HAR dataset
+python3 real/Epilepsy/featureSelection_Epilepsy.py # for the Epilepsy dataset
 ```
 
 **Step 4**
@@ -252,13 +271,16 @@ Combine all the feature scores/rankings from the different feature selection met
 python3 real/NSL-KDD/combine_fss.py
 ```
 
+The `combine_fss.py` script can be found in all the respective folders.
+
 **Step 5**
+
 Train classifiers based on features selected
 ```
 python3 real/NSL-KDD/traintest.py
 ```
 
-The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step 4**.
+The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step 4**. Similarly, the `traintest.py` script can be found in all the respective folders.
 
 [syntElectrical]: <https://doi.org/10.48550/arXiv.2211.03035>
 [IRlf]: <https://doi.org/10.1109/TPAMI.2009.190>
@@ -268,3 +290,5 @@ The argument `<ranks>` should be `ranks.csv` that was output earlier from **Step
 [SM]: <https://doi.org/10.1186/1471-2105-7-3>
 [SMDatasets]: <https://github.com/rdiaz02/varSelRF-suppl-mat>
 [NSL-KDD]: <https://www.kaggle.com/datasets/hassan06/nslkdd>
+[HAR]: <https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones>
+[Epilepsy]: <https://www.kaggle.com/datasets/yasserhessein/epileptic-seizure-recognition>

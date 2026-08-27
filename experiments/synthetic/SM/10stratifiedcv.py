@@ -18,12 +18,11 @@ from sklearn.metrics import balanced_accuracy_score
 
 if len(sys.argv) < 2:
     print(
-        "Possible usage: python3.11 10stratifiedcv.py <datasetsFolder> <folder>"
+        "Possible usage: python3 10stratifiedcv.py <datasetsFolder>"
     )
     sys.exit(1)
 else:
     datasetsFolder = Path(sys.argv[1])
-    folder = Path(sys.argv[2])
 
 XFolder = datasetsFolder.joinpath('X')
 yFolder = datasetsFolder.joinpath('y')
@@ -53,7 +52,7 @@ X_dict = {2: nClass2_X, 3: nClass3_X, 4: nClass4_X}
 y_dict = {2: nClass2_y, 3: nClass3_y, 4: nClass4_y}
 
 # Reading the top 120 features
-combinedFolder = folder.joinpath("Combined")
+combinedFolder = "Combined"
 ranks_df = pd.read_csv(
     combinedFolder.joinpath("SMranks.csv"), index_col=0
 )

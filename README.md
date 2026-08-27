@@ -1,4 +1,4 @@
-# **ProD**, a visualizable filter-feature selection method based on "prodding" the class <ins>Pro</ins>bability <ins>D</ins>ensities for overlapping.
+# **ProD**, a visualizable filter-feature selection method based on "prodding" the class {Pro}bability {D}ensities for overlapping.
 
 ## Install
 ProD can be installed from PyPI:

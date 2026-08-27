@@ -10,8 +10,8 @@ pickle = py.importlib.import_module('pickle');
 cd('../Electrical/')
 
 % Modify dataset name accordingly
-datasetname = "ANDORdiscrete";
-%datasetname = "ADDERdiscrete";
+% datasetname = "ANDORdiscrete";
+datasetname = "ADDERdiscrete";
 
 handle = py.open(datasetname + "_datasets.pkl", 'rb');
 processedDatasets_dict = pickle.load(handle);

@@ -16,22 +16,16 @@ def get_indsTopnFeatures(_importances, _n):
         key=lambda i: _importances[i], reverse=True
     )[:_n]
 
-if len(sys.argv) < 2:
-    print("Possible usage: python3.11 featureSelection_NSLKDD.py <folder>")
-    sys.exit(1)
-else:
-    folder = Path(sys.argv[1])
-
-Xdf = pd.read_csv(folder.joinpath("Xtrain20.csv"), index_col=0)
+Xdf = pd.read_csv("data/Xtrain20.csv", index_col=0)
 X = Xdf.values
 
-y = pd.read_csv(folder.joinpath("ytrain20.csv"), index_col=0)
+y = pd.read_csv("data/ytrain20.csv", index_col=0)
 y = np.reshape(y, -1)
 
-Xdftest = pd.read_csv(folder.joinpath("Xtest.csv"), index_col=0)
+Xdftest = pd.read_csv("data/Xtest.csv", index_col=0)
 Xtest = Xdftest.values
 
-ytest = pd.read_csv(folder.joinpath("ytest.csv"), index_col=0)
+ytest = pd.read_csv("data/ytest.csv", index_col=0)
 ytest = np.reshape(ytest, -1)
 
 X = np.delete(X, (19, 20), 1)

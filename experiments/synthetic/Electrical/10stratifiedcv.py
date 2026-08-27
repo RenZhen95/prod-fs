@@ -17,17 +17,27 @@ from sklearn.metrics import balanced_accuracy_score
 
 if len(sys.argv) < 4:
     print(
-        "Possible usage: python3.11 10stratifiedcv.py <datasetsFolder> " +
+        "Possible usage: python3 10stratifiedcv.py <datasetPkl> " +
         "<datasetName> <folder>"
+    )
+    print(
+        " - <datasetName> should be the name of the dataset, either:\n" +
+        "   > ADDERcontinuous\n" +
+        "   > ANDORcontinuous\n" +
+        "   > ADDERdiscrete\n" +
+        "   > ANDORdiscrete"
+    )
+    print(
+        " - <folder> should be the folder made in Step 1"
     )
     sys.exit(1)
 else:
-    datasetsFolder = Path(sys.argv[1])
+    datasetPkl = Path(sys.argv[1])
     datasetName = sys.argv[2]
     folder = Path(sys.argv[3])
 
 # Loading datasets
-with open(datasetsFolder.joinpath(f"{datasetName}_datasets.pkl"), "rb") as handle:
+with open(datasetPkl, "rb") as handle:
     datasets = pickle.load(handle)
 
 # Reading the top 10 features

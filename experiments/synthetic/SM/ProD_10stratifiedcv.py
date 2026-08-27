@@ -16,14 +16,13 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from sklearn.metrics import balanced_accuracy_score
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 2:
     print(
-        "Possible usage: python3.11 ProD_10stratifiedcv.py <datasetsFolder> <folder>"
+        "Possible usage: python3 ProD_10stratifiedcv.py <datasetsFolder>"
     )
     sys.exit(1)
 else:
     datasetsFolder = Path(sys.argv[1])
-    folder = Path(sys.argv[2])
 
 XFolder = datasetsFolder.joinpath('X')
 yFolder = datasetsFolder.joinpath('y')
@@ -53,142 +52,152 @@ X_dict = {2: nClass2_X, 3: nClass3_X, 4: nClass4_X}
 y_dict = {2: nClass2_y, 3: nClass3_y, 4: nClass4_y}
 
 # Reading the top 120 features
-with open(folder.joinpath(f"ProD/SMProD_ranks.pkl"), "rb") as handle:
-    ranks_df = pickle.load(handle)
+with open(f"ProD/SMProD-Sco_ranks.pkl", "rb") as handle:
+    ranksScott_df = pickle.load(handle)
+with open(f"ProD/SMProD-Slv_ranks.pkl", "rb") as handle:
+    ranksSilverman_df = pickle.load(handle)
 
-ranks_nClass2 = ranks_df[ranks_df["nClass"] == 2.0]
-ranks_nClass3 = ranks_df[ranks_df["nClass"] == 3.0]
-ranks_nClass4 = ranks_df[ranks_df["nClass"] == 4.0]
-ranks = {2: ranks_nClass2, 3: ranks_nClass3, 4: ranks_nClass4}
-
-# 3 nClass x 4 iterations x 5 Classifiers (only for ProD)
-performance_df = pd.DataFrame(
-    data=np.zeros((3*4*5, 5)), columns=["Bal.Acc", "nClass", "Iteration", "FS", "Clf"]
-)
-performance_df["FS"] = performance_df["FS"].astype("object")
-performance_df["Clf"] = performance_df["Clf"].astype("object")
-
-skf = StratifiedKFold(n_splits=10)
-
-count = 0
-for nClass in [2, 3, 4]:
-    for itr in range(4):
-        ranks_peritr = ranks[nClass][ranks[nClass]["iteration"] == itr]
-        ranks_peritr = ranks_peritr.drop(
-            columns=["rank", "iteration", "nClass"]
-        )
-        print(f"nClass: {nClass} | itr: {itr}")
-        print(ranks_peritr)
-
-        X = X_dict[nClass][itr].values
-        y = y_dict[nClass][itr]
-        print(X.shape)
-
-        top_features = ranks_peritr["ProD"].to_numpy()
-        top_features = list(map(int, top_features))
-
-        X_reduced = X[:,top_features]
-
-        balAcc_kNN = np.zeros(10)
-        balAcc_SVM = np.zeros(10)
-        balAcc_NB  = np.zeros(10)
-        balAcc_LDA = np.zeros(10)
-        balAcc_DT  = np.zeros(10)
-
-        # Carry out stratified k-fold
-        for fold, (train_index, test_index) in enumerate(skf.split(X_reduced, y)):
-            X_validate = X_reduced[test_index, :]
-            y_validate = y[test_index]
-
-            X_train = X_reduced[train_index, :]
-            y_train = y[train_index]
-
-            # 3-fold grid search cross-validation
-            CV_3fold = KFold(n_splits=3, shuffle=True, random_state=0)
-
-            # kNN
-            kNN = KNeighborsClassifier(weights="uniform")
-            kNN_params = {'n_neighbors': [5,7,9]}
-            clfkNN_GS = GridSearchCV(
-                kNN, kNN_params, cv=CV_3fold, n_jobs=-1, scoring="balanced_accuracy"
+# Update: 08.2026 - As response to reviewer, experiment with ProD, using
+# Silverman's rule-of-thumb as a bandwidth estimate
+def experiment_loop(ranks_df, suffix):
+    ranks_nClass2 = ranks_df[ranks_df["nClass"] == 2.0]
+    ranks_nClass3 = ranks_df[ranks_df["nClass"] == 3.0]
+    ranks_nClass4 = ranks_df[ranks_df["nClass"] == 4.0]
+    ranks = {2: ranks_nClass2, 3: ranks_nClass3, 4: ranks_nClass4}
+    
+    # 3 nClass x 4 iterations x 5 Classifiers (only for ProD)
+    performance_df = pd.DataFrame(
+        data=np.zeros((3*4*5, 5)),
+        columns=["Bal.Acc", "nClass", "Iteration", "FS", "Clf"]
+    )
+    performance_df["FS"] = performance_df["FS"].astype("object")
+    performance_df["Clf"] = performance_df["Clf"].astype("object")
+    
+    skf = StratifiedKFold(n_splits=10)
+    
+    count = 0
+    for nClass in [2, 3, 4]:
+        for itr in range(4):
+            ranks_peritr = ranks[nClass][ranks[nClass]["iteration"] == itr]
+            ranks_peritr = ranks_peritr.drop(
+                columns=["rank", "iteration", "nClass"]
             )
-            clfkNN_GS.fit(X_train, y_train)
-            balAcc_kNN[fold] = balanced_accuracy_score(
-                y_validate, clfkNN_GS.predict(X_validate)
-            )
+            print(f"nClass: {nClass} | itr: {itr}")
+            print(ranks_peritr)
+    
+            X = X_dict[nClass][itr].values
+            y = y_dict[nClass][itr]
+            print(X.shape)
+    
+            top_features = ranks_peritr[f"ProD-{suffix}"].to_numpy()
+            top_features = list(map(int, top_features))
+    
+            X_reduced = X[:,top_features]
+    
+            balAcc_kNN = np.zeros(10)
+            balAcc_SVM = np.zeros(10)
+            balAcc_NB  = np.zeros(10)
+            balAcc_LDA = np.zeros(10)
+            balAcc_DT  = np.zeros(10)
+    
+            # Carry out stratified k-fold
+            for fold, (train_index, test_index) in enumerate(skf.split(X_reduced, y)):
+                X_validate = X_reduced[test_index, :]
+                y_validate = y[test_index]
+    
+                X_train = X_reduced[train_index, :]
+                y_train = y[train_index]
+    
+                # 3-fold grid search cross-validation
+                CV_3fold = KFold(n_splits=3, shuffle=True, random_state=0)
+    
+                # kNN
+                kNN = KNeighborsClassifier(weights="uniform")
+                kNN_params = {'n_neighbors': [5,7,9]}
+                clfkNN_GS = GridSearchCV(
+                    kNN, kNN_params, cv=CV_3fold, n_jobs=-1, scoring="balanced_accuracy"
+                )
+                clfkNN_GS.fit(X_train, y_train)
+                balAcc_kNN[fold] = balanced_accuracy_score(
+                    y_validate, clfkNN_GS.predict(X_validate)
+                )
+    
+                # SVM
+                svm_clf = SVC()
+                svm_params = {'C': [1,10,100,1000], 'gamma': [0.001,0.0001], 'kernel': ['rbf']}
+                clfsvm_GS = GridSearchCV(
+                    svm_clf, svm_params, cv=CV_3fold, n_jobs=-1, scoring="balanced_accuracy",
+                    error_score="raise"
+                )
+                clfsvm_GS.fit(X_train, y_train)
+                balAcc_SVM[fold] = balanced_accuracy_score(
+                    y_validate, clfsvm_GS.predict(X_validate)
+                )
+    
+                # Gaussian Naive-Bayes
+                naiveBayesClf = GaussianNB()
+                naiveBayesClf.fit(X_train, y_train)
+                balAcc_NB[fold] = balanced_accuracy_score(
+                    y_validate, naiveBayesClf.predict(X_validate)
+                )
+    
+                # LDA
+                ldaClf = LinearDiscriminantAnalysis()
+                ldaClf.fit(X_train, y_train)
+                balAcc_LDA[fold] = balanced_accuracy_score(
+                    y_validate, ldaClf.predict(X_validate)
+                )
+    
+                # DT
+                dt_clf = DecisionTreeClassifier(random_state=0)
+                dt_params = {'splitter': ["best","random"], 'max_depth': [3,5,7,9]}
+                clfdt_GS = GridSearchCV(
+                    dt_clf, dt_params, cv=CV_3fold, scoring="balanced_accuracy"
+                )
+                clfdt_GS.fit(X_train, y_train)
+                balAcc_DT[fold] = balanced_accuracy_score(
+                    y_validate, clfdt_GS.predict(X_validate)
+                )
+    
+            performance_df.at[count, "Bal.Acc"] = balAcc_kNN.mean()
+            performance_df.at[count, "nClass"] = nClass
+            performance_df.at[count, "Iteration"] = itr
+            performance_df.at[count, "FS"] = f"ProD-{suffix}"
+            performance_df.at[count, "Clf"] = "kNN"
+    
+            performance_df.at[count+1, "Bal.Acc"] = balAcc_SVM.mean()
+            performance_df.at[count+1, "nClass"] = nClass
+            performance_df.at[count+1, "Iteration"] = itr
+            performance_df.at[count+1, "FS"] = f"ProD-{suffix}"
+            performance_df.at[count+1, "Clf"] = "SVM"
+    
+            performance_df.at[count+2, "Bal.Acc"] = balAcc_NB.mean()
+            performance_df.at[count+2, "nClass"] = nClass
+            performance_df.at[count+2, "Iteration"] = itr
+            performance_df.at[count+2, "FS"] = f"ProD-{suffix}"
+            performance_df.at[count+2, "Clf"] = "NB"
+    
+            performance_df.at[count+3, "Bal.Acc"] = balAcc_LDA.mean()
+            performance_df.at[count+3, "nClass"] = nClass
+            performance_df.at[count+3, "Iteration"] = itr
+            performance_df.at[count+3, "FS"] = f"ProD-{suffix}"
+            performance_df.at[count+3, "Clf"] = "LDA"
+    
+            performance_df.at[count+4, "Bal.Acc"] = balAcc_DT.mean()
+            performance_df.at[count+4, "nClass"] = nClass
+            performance_df.at[count+4, "Iteration"] = itr
+            performance_df.at[count+4, "FS"] = f"ProD-{suffix}"
+            performance_df.at[count+4, "Clf"] = "DT"
+            count += 5
+    
+    performance_df.to_csv(f"10foldcvProD-{suffix}.csv")
+    
+    averaged_df = performance_df.groupby(["nClass", "FS", "Clf"]).mean()
+    averaged_df = averaged_df.drop(columns=["Iteration"])
+    averaged_df.to_csv(f"10foldcvProD-{suffix}_averaged.csv")
 
-            # SVM
-            svm_clf = SVC()
-            svm_params = {'C': [1,10,100,1000], 'gamma': [0.001,0.0001], 'kernel': ['rbf']}
-            clfsvm_GS = GridSearchCV(
-                svm_clf, svm_params, cv=CV_3fold, n_jobs=-1, scoring="balanced_accuracy",
-                error_score="raise"
-            )
-            clfsvm_GS.fit(X_train, y_train)
-            balAcc_SVM[fold] = balanced_accuracy_score(
-                y_validate, clfsvm_GS.predict(X_validate)
-            )
-
-            # Gaussian Naive-Bayes
-            naiveBayesClf = GaussianNB()
-            naiveBayesClf.fit(X_train, y_train)
-            balAcc_NB[fold] = balanced_accuracy_score(
-                y_validate, naiveBayesClf.predict(X_validate)
-            )
-
-            # LDA
-            ldaClf = LinearDiscriminantAnalysis()
-            ldaClf.fit(X_train, y_train)
-            balAcc_LDA[fold] = balanced_accuracy_score(
-                y_validate, ldaClf.predict(X_validate)
-            )
-
-            # DT
-            dt_clf = DecisionTreeClassifier(random_state=0)
-            dt_params = {'splitter': ["best","random"], 'max_depth': [3,5,7,9]}
-            clfdt_GS = GridSearchCV(
-                dt_clf, dt_params, cv=CV_3fold, scoring="balanced_accuracy"
-            )
-            clfdt_GS.fit(X_train, y_train)
-            balAcc_DT[fold] = balanced_accuracy_score(
-                y_validate, clfdt_GS.predict(X_validate)
-            )
-
-        performance_df.at[count, "Bal.Acc"] = balAcc_kNN.mean()
-        performance_df.at[count, "nClass"] = nClass
-        performance_df.at[count, "Iteration"] = itr
-        performance_df.at[count, "FS"] = "ProD"
-        performance_df.at[count, "Clf"] = "kNN"
-
-        performance_df.at[count+1, "Bal.Acc"] = balAcc_SVM.mean()
-        performance_df.at[count+1, "nClass"] = nClass
-        performance_df.at[count+1, "Iteration"] = itr
-        performance_df.at[count+1, "FS"] = "ProD"
-        performance_df.at[count+1, "Clf"] = "SVM"
-
-        performance_df.at[count+2, "Bal.Acc"] = balAcc_NB.mean()
-        performance_df.at[count+2, "nClass"] = nClass
-        performance_df.at[count+2, "Iteration"] = itr
-        performance_df.at[count+2, "FS"] = "ProD"
-        performance_df.at[count+2, "Clf"] = "NB"
-
-        performance_df.at[count+3, "Bal.Acc"] = balAcc_LDA.mean()
-        performance_df.at[count+3, "nClass"] = nClass
-        performance_df.at[count+3, "Iteration"] = itr
-        performance_df.at[count+3, "FS"] = "ProD"
-        performance_df.at[count+3, "Clf"] = "LDA"
-
-        performance_df.at[count+4, "Bal.Acc"] = balAcc_DT.mean()
-        performance_df.at[count+4, "nClass"] = nClass
-        performance_df.at[count+4, "Iteration"] = itr
-        performance_df.at[count+4, "FS"] = "ProD"
-        performance_df.at[count+4, "Clf"] = "DT"
-        count += 5
-
-performance_df.to_csv("10foldcvProD.csv")
-
-averaged_df = performance_df.groupby(["nClass", "FS", "Clf"]).mean()
-averaged_df = averaged_df.drop(columns=["Iteration"])
-averaged_df.to_csv("10foldcvProD_averaged.csv")
+# Call experiment loop
+experiment_loop(ranksScott_df, "Sco")
+experiment_loop(ranksSilverman_df, "Slv")
 
 sys.exit(0)

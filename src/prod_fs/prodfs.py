@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 class ProD():
     def __init__(
             self, integration_method="trapz", delta=500,
-            bw_method="scott", k=2, n_jobs=1,
+            bw_method="scott", bw_factor=None, k=2, n_jobs=1,
             lower_end=-1.5, upper_end=2.5,
             averaging_method="mean", mode="release"
     ):
@@ -25,8 +25,19 @@ class ProD():
 
         bw_method : str, scalar or callable
          - The method used to calculate the estimator bandwith. This can be
-           'scott' and 'silverman', a scalar constant or a callable. For
-           more details, see scipy.stats.gaussian_kde documentation.
+           `scott`, `silverman`, `customScott`, `customSilverman`, a scalar
+           constant or a callable. For more details, see scipy.stats.gaussian_kde
+           documentation.
+
+           Note that `silverman` refers to SciPy's implementation of
+           Silverman's suggestion for multivariate data, whereas
+           `customSilverman` refers to our implementation of Silverman's
+           rule-of-thumb, which may be more robust in the univariate case.
+
+        bw_factor : None or float
+         - Multiplies the calculated bandwidth by `bw_factor`. Only applicable
+           if `bw_method` is one of the custom methods or a user-input scalar,
+           in which case `None` will set `bw_factor` to 1.0.
 
         k : intpairwise
          - Compute the mean intersection area between (number of classes)
@@ -54,6 +65,7 @@ class ProD():
         self.integration_method = integration_method
         self.delta = delta
         self.bw_method = bw_method
+        self.bw_factor = bw_factor
         self.k = k
         self.n_jobs = n_jobs
         self.mode = mode
@@ -94,6 +106,11 @@ class ProD():
         # Initializing a list of available classes
         self.yLabels = list(self.y_segregatedGroup.keys())
         self.yLabels.sort()
+
+        # Map labels to index for downstream vectorization
+        self.yLabelsIdx = {}
+        for i, y in enumerate(self.yLabels):
+            self.yLabelsIdx[y] = i
 
         # Check to make sure user does not enter an invalid parameter 'n'
         if self.k > len(self.yLabels):
@@ -153,6 +170,7 @@ class ProD():
             )(feat_idx) for feat_idx in range(self.X.shape[1])
         )
         res = Parallel(n_jobs=self.n_jobs, verbose=0)(delayed_calls)
+
         if self.mode == "development":
             self.feature_kernels = []
             for item in res:
@@ -168,11 +186,14 @@ class ProD():
 
         # Compute intersection areas
         _combinations = combinations(self.yLabels, self.k)
-        c1 = []
-        cStack = []
+        c1 = []     # Holds each k-combination of classes (element, element)
+        c1idx = []  # Holds each k-combination of classes (idx, idx)
+        cStack = [] # Intersection areas between all k-combinations for
+                    # all features
         print("Computing intersection areas ...")
         for c in _combinations:
             c1.append(c)
+            c1idx.append([self.yLabelsIdx[_] for _ in c])
             delayed_calls_intersectionArea = (
                 delayed(
                     self.compute_intersectionArea
@@ -189,29 +210,32 @@ class ProD():
         if self.averaging_method == "mean":
             print(" - averaging_method: 'mean'")
             self.intersectionAreas = np.mean(cStack, axis=0)
-
+            
         elif self.averaging_method == "weighted":
             print(" - averaging_method: 'weighted'")
-            nSamples_total = self.X.shape[0]
-            nSamples_perClass = defaultdict()
+            nSamples_perClass = np.zeros((len(self.yLabels), 1))
+
             for _class in self.y_segregatedGroup.keys():
-                nSamples_perClass[_class] = self.y_segregatedGroup[_class].shape[0]
+                nSamples_perClass[
+                    self.yLabelsIdx[_class]
+                ] = self.y_segregatedGroup[_class].shape[0]
 
-            _weights = np.zeros(len(c1))
+            _weights = np.zeros(len(c1)) # per k-combination
+
+            # Weigh each k-combination IA with the recriprocal of the
+            # product of all number of samples per class
+
+            # Loop through each k-combination
             for _wi, _c in enumerate(c1):
-                _weight = (
-                    nSamples_perClass[_c[0]] + nSamples_perClass[_c[1]]
-                ) / nSamples_total
-                _weights[_wi] = _weight
+                _den = np.prod(nSamples_perClass[c1idx[_wi]])
+                _weights[_wi] = 1 / _den
 
-            # Normalized such that the sum of all the weights are 1
-            _norm_weights = _weights / _weights.sum()
+            intAreas = np.zeros(self.X.shape[1]) # Array of all features
 
-            intAreas = np.zeros(self.X.shape[1])
             for _ci in range(len(c1)):
-                intAreas += cStack[_ci,:] * _norm_weights[_ci]
+                intAreas += cStack[_ci,:] * _weights[_ci]
 
-            self.intersectionAreas = intAreas
+            self.intersectionAreas = intAreas / _weights.sum()
 
         else:
             raise ValueError(
@@ -310,8 +334,15 @@ class ProD():
             _grid = self.XGrid
 
         for y in self.yLabels:
+            if isinstance(self.bw_method, str):
+                bw = self.get_bw(
+                    self.y_segregatedGroup[y][:,feat_idx], self.bw_method
+                )
+            else:
+                bw = self.bw_method
+
             kernel = gaussian_kde(
-                self.y_segregatedGroup[y][:,feat_idx], self.bw_method
+                self.y_segregatedGroup[y][:,feat_idx], bw_method=bw
             )
             kernels[y] = kernel
 
@@ -322,6 +353,68 @@ class ProD():
             return kernels, pdes, _grid
         elif self.mode == "release":
             return pdes, _grid
+
+    def get_bw(self, _sample, _custom_method):
+        """
+        Wrapper function to calculate bandwidth based on implemented methods.
+
+        Parameters
+        ----------
+        _sample : np.array
+         - Class-unique feature array
+
+        _custom_method : str
+         - Available options include (Update as of 27.08.2026)
+
+           1. `scott` : SciPy's built-in Scott's rule
+
+           2. `silverman` : SciPy's built-in Silverman's suggestion for
+                            multivariate data
+
+           3. `customSilverman` : Custom implementation of Silverman's
+                                  rule-of-thumb for univariate data. Allows
+                                  user to multiply with own factor.
+
+           4. `customScott` : Custom implementation of Scott's rule for
+                              univariate data. Allows user to multiply with
+                              own factor.
+
+        Returns
+        -------
+        bw : float or str
+         - Bandwidth
+        """
+        sampleStd = _sample.std(ddof=1)
+
+        if self.bw_factor is None:
+            _factor = 1.0
+        else:
+            _factor = self.bw_factor
+
+        if _custom_method == "customSilverman":
+            q75, q25 = np.percentile(_sample, [75, 25])
+            iqr = q75 - q25
+
+            # Exception for zero variance (especially when dealing with
+            # discrete values)
+            if iqr == 0:
+                A = sampleStd
+            else:
+                A = min(sampleStd, iqr/1.34)
+
+            bw = 0.9 * A * len(_sample)**(-1/5) / sampleStd
+            bw = _factor * bw
+            # Because SciPy's gaussian_kde will multiply bandwidth with
+            # the sample standard deviation
+
+        elif _custom_method == "customScott":
+            bw = len(_sample)**(-1/5)
+            bw = _factor * bw
+
+        else:
+            bw = _custom_method
+
+        return bw
 
     def segregateX_y(self):
         """
