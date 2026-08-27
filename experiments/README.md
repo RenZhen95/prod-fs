@@ -24,7 +24,7 @@ This will produce four Python-pickled binary files:
 - ANDOR discrete datasets
 - ADDER discrete datasets
 
-Generated datasets might show random variations due to how computers handle randomness. For an exact reproduction, use the datasets in `Electrical-Datasets.zip`.
+Generated datasets might show random variations due to how computers handle randomness. For an exact reproduction, use the datasets in `Electrical-Datasets.zip` found in respective Electrical folder.
 
 **Step 1**
 
@@ -91,7 +91,7 @@ Evaluations
 ### SM Datasets
 **Step 0**
 
-The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder `SM-Datasets.zip` to use the datasets used in our paper, which have been preprocessed to better suit our "style".
+The SM datasets are generated according to the method proposed by [Diaz et al., 2006][SM]. The synthetic datasets are also available at [https://github.com/rdiaz02/varSelRF-suppl-mat][SMDatasets]. However, for a more accurate reproduction, unzip the compressed folder `data.zip` in the respective SM folder to use the datasets used in our paper, which have been preprocessed to better suit our "style".
 
 **Step 1**
 
@@ -110,7 +110,7 @@ Carry out feature selection with ProD:
 python3 synthetic/SM/ProD_SM.py
 ```
 
-Save the output files in the ProD subfolder made in **Step 0**.
+Save the output files in the ProD subfolder made in **Step 1**.
 
 **Step 3**
 
@@ -119,13 +119,13 @@ Carry out feature selection with other feature selection methods implemented in 
 python3 synthetic/SM/featureSelection_SM.py
 ```
 
-Save the output files in the OtherFS subfolder made in **Step 0**.
+Save the output files in the OtherFS subfolder made in **Step 1**.
 
 Also carry out feature selection with methods implemented in MATLAB:
 - synthetic/matlabFS/featureSelection_SM.m (I-Relief and LHR)
 - synthetic/matlabFS/featureSelection_mRMR_SM.m (mRMR)
 
-Save the corresponding output files in the IRelief, LHRelief, and mRMR subfolders made in **Step 0**.
+Save the corresponding output files in the IRelief, LHRelief, and mRMR subfolders made in **Step 1**.
 
 **Step 4**
 
@@ -142,7 +142,7 @@ Evaluations
   python3 synthetic/SM/evaluate_fss.py
   ```
 
-  The `<trueSignatures_folder>` should be the path to the folder `trueSignatures` zipped in SM-Datasets.zip
+  The `<trueSignatures_folder>` should be the path to the folder `trueSignatures` zipped in `data.zip`
 
   To replicate the results in the paper, set <nTop> to 20
 
@@ -167,13 +167,7 @@ Download the datasets from the links provided in the paper, but for an exact rep
 7. Cancer
 8. Gait
 
-The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets.
-
-For the Epilepsy dataset, a separate test dataset is not provided but since the number of samples available is large enough, the data is split 80/20 in a stratified manner for training and testing, respectively.
-
-The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders.
-
-Steps to reproduce results for the HAR, Epilepsy, and NSL-KDD datasets are described in next section.
+The HAR and NSL-KDD datasets are handled differently as they have their separate training and test datasets. For the Epilepsy dataset, a separate test dataset is not provided but since the number of samples available is large enough, the data is split 80/20 in a stratified manner for training and testing, respectively. The datasets and code are found within the `real/HAR`, `real/Epilepsy`, and `real/NSL-KDD` folders. The steps to reproduce results for the HAR, Epilepsy, and NSL-KDD datasets are described in next section.
 
 **Step 1**
 
