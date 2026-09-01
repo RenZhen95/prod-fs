@@ -17,12 +17,12 @@ df70 = df[df["nObs"] == 70.0]
 clf_order = ["kNN", "SVM", "NB", "LDA", "DT"]
 
 print("Dataset with 30 observations")
-print(df30[["Bal.Acc", "Clf"]].groupby("Clf").std(ddof=1).reindex(clf_order))
+print(round(df30[["Bal.Acc", "Clf"]].groupby("Clf").std(ddof=1).reindex(clf_order), 2))
 
 print("Dataset with 50 observations")
-print(df50[["Bal.Acc", "Clf"]].groupby("Clf").std(ddof=1).reindex(clf_order))
+print(round(df50[["Bal.Acc", "Clf"]].groupby("Clf").std(ddof=1).reindex(clf_order), 2))
 
 print("Dataset with 70 observations")
-print(df70[["Bal.Acc", "Clf"]].groupby("Clf").std(ddof=1).reindex(clf_order))
+print(round(df70[["Bal.Acc", "Clf"]].groupby("Clf").std(ddof=1).reindex(clf_order), 2))
 
 sys.exit(0)

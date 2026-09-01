@@ -14,7 +14,7 @@ rank_nClass4 = zeros(4060, 4);
 t_mRMR = zeros(3, 4);
 
 % Adjust path accordingly
-cd('../SM/SM-Datasets/')
+cd('../SM/data/')
 
 for i=1:4
     % nClass = 2

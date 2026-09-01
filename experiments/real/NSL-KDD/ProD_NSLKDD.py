@@ -51,13 +51,13 @@ def experiment_loop(bw_method, suffix):
     
     # === === === === === === ===
     # GET ELAPSED TIME
-    elapsed_times.at[f"Prod-{suffix}"] = tProD
+    elapsed_times.at[f"ProD-{suffix}"] = tProD
     
     # === === === === === === ===
     # GETTING TOP N FEATURES
-    rank_df.loc[:, f"Prod-{suffix}"] = prodRanker.get_topnFeatures(nRetainedFeatures)
+    rank_df.loc[:, f"ProD-{suffix}"] = prodRanker.get_topnFeatures(nRetainedFeatures)
     
-    scores_df.loc[:, f"Prod-{suffix}"] = prodRanker.feature_importances_
+    scores_df.loc[:, f"ProD-{suffix}"] = prodRanker.feature_importances_
     
     elapsed_times.to_csv(f"ProD-{suffix}_elapsed_times.csv")
     rank_df.to_csv(f"ProD-{suffix}_rank.csv")
