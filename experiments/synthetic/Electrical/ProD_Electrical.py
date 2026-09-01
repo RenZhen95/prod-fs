@@ -63,7 +63,8 @@ def experiment_loop(bw_method, suffix):
             tProD_start = process_time()
             prodRanker = ProD(
                 integration_method="trapz", delta=500, bw_method=bw_method,
-                k=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5
+                k=2, n_jobs=-1, mode="release", lower_end=-1.5, upper_end=2.5,
+                averaging_method="mean"
             )
             prodRanker.fit(X, y)
             tProD_stop = process_time()
