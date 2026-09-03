@@ -104,7 +104,7 @@ for dataset in datasets_dict.keys():
     # From scikit-learn
     # Mutual Information
     tMI_start = process_time()
-    resMI = mutual_info_classif(X, y, n_neighbors=7, random_state=0)
+    resMI = mutual_info_classif(X, y, n_neighbors=7, random_state=0, n_jobs=-1)
     tMI_stop = process_time()
     tMI = tMI_stop - tMI_start
 
