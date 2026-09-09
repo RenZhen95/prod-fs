@@ -1,5 +1,6 @@
 import warnings
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 from itertools import combinations
 from collections import defaultdict
@@ -71,6 +72,10 @@ class ProD():
         self.n_jobs = n_jobs
         self.mode = mode
         self.averaging_method = averaging_method
+        self.pairwiseIntersectionAreas = None
+        self.kWeights = None
+        self.c1 = None
+        self.c1idx = None
 
         # Initializing the x-axis grid
         if lower_end > 0.0:
@@ -475,6 +480,136 @@ class ProD():
             reverse=False
         )[:n]
 
+    def calc_pairwiseCombinationAreas(self):
+        """
+        Subroutine for computing pairwise (k=2) intersection areas for
+        plotting diagnostic heatmap.
+        """
+        # Compute intersection areas
+        _combinations = combinations(list(self.y_segregatedGroup.keys()), 2)
+        c1 = []     # Holds each k-combination of classes (element, element)
+        c1idx = []  # Holds each k-combination of classes (idx, idx)
+        cStack = [] # Intersection areas between all k-combinations for
+                    # all features
+        print("Computing pairwise intersection areas ...")
+        for c in _combinations:
+            c1.append(c)
+
+            c1idx.append([self.yLabelsIdx[_] for _ in c])
+            delayed_calls_intersectionArea = (
+                delayed(
+                    self.compute_intersectionArea
+                )(feat_idx, c) for feat_idx in range(self.X.shape[1])
+            )
+            c_intersection = Parallel(
+                n_jobs=self.n_jobs, backend="threading", verbose=0
+            )(delayed_calls_intersectionArea)
+
+            cStack.append(c_intersection)
+
+        cStack = np.array(cStack)   # intersection areas between every
+                                    # pairwise combination for every feature
+
+        _weights = np.ones(len(c1)) # per k-combination         
+
+        if self.averaging_method == "weighted":
+            print(" - averaging_method: 'weighted'")
+            nSamples_perClass = np.zeros((len(self.yLabels), 1))
+
+            for _class in self.y_segregatedGroup.keys():
+                nSamples_perClass[
+                    self.yLabelsIdx[_class]
+                ] = self.y_segregatedGroup[_class].shape[0]
+
+            # Weigh each k-combination IA with the recriprocal of the
+            # product of all number of samples per class
+
+            # Loop through each k-combination
+            for _wi, _c in enumerate(c1):
+                _den = np.prod(nSamples_perClass[c1idx[_wi]])
+                _weights[_wi] = 1 / _den
+
+        return cStack, _weights, c1, c1idx
+
+    def plot_classPairHeatmaps(self, feat_idx, _ax=None):
+        """
+        Plots a diagnostic heatmap of pairwise intersection areas.
+
+        Parameters
+        ----------
+        feat_idx : int
+         - Index of feature to plot according to input X.
+
+        _ax : matplotlib.axes.Axes
+         - Matplotlib's Axes object, if None, one will be created internally.
+        """
+        print(f"Averaging scheme: {self.averaging_method}")
+
+        # Calculate pairwise intersection areas
+        if self.pairwiseIntersectionAreas is None:
+            self.pairwiseIntersectionAreas, self.kWeights, self.c1, self.c1idx = self.calc_pairwiseCombinationAreas()
+
+        # Get pairwise intersection areas for user-desired feature
+        pairwiseIA_f = defaultdict(float)
+        for i, cIdx in enumerate(self.c1idx):
+            pairwiseIA_f[tuple(cIdx)] = (
+                self.pairwiseIntersectionAreas[i, feat_idx] * self.kWeights[i]
+            ) / self.kWeights.sum()
+
+        # Initialize pairwise matrix
+        pairwise_matrix = np.zeros(
+            (len(self.y_segregatedGroup.keys()), len(self.y_segregatedGroup.keys()))
+        )
+        np.fill_diagonal(pairwise_matrix, 1.0)
+
+        for (i, j), ia in pairwiseIA_f.items():
+            pairwise_matrix[i,j] = ia
+            pairwise_matrix[j,i] = ia
+
+        # Plot
+        if _ax is None:
+            fig, _ax = plt.subplots(1,1)
+
+        # Create a mask to hide the upper triangle for a cleaner look
+        mask = np.triu(np.ones_like(pairwise_matrix, dtype=bool))
+
+        # Map class index to class
+        idxyLabels = {v: k for k, v in self.yLabelsIdx.items()}
+        class_labels = [idxyLabels[i] for i in range(len(idxyLabels))]
+
+        sns.heatmap(
+            pairwise_matrix, mask=mask, 
+            annot=True, fmt=".3f", cmap="Reds", 
+            xticklabels=class_labels, 
+            yticklabels=class_labels,
+            linewidths=1, linecolor='white', ax=_ax
+        )
+
+        averagingScheme_labelMap = {
+            "mean": "(Unweighted)",
+            "weighted": "(Weighted)"
+        }
+
+        # Format the colorbar explicitly
+        cbar = _ax.collections[0].colorbar
+        cbar.set_label(
+            f"Intersection Area {averagingScheme_labelMap[self.averaging_method]}", 
+            fontsize='large'
+        )
+
+        # Move x-axis ticks and labels to the top
+        _ax.xaxis.tick_top()
+        
+        # Optional: Rotate the top labels so they do not overlap
+        _ax.tick_params(axis='x', rotation=45)
+        _ax.tick_params(axis='y', rotation=45)
+        
+        _ax.set_title(
+            f"Pairwise Class Intersection Area Heatmap (Feature {feat_idx})", 
+            fontsize="large"
+        )
+        plt.tight_layout()
+
     def plot_overlapAreas(
             self, feat_idx, feat_names=None, _combinations=None,
             intersection_area=True, show_samples=False, legend=False,
@@ -516,9 +651,6 @@ class ProD():
         """
         if _ax is None:
             fig, _ax = plt.subplots(1,1)
-            _ax_passed = False
-        else:
-            _ax_passed = True
 
         linecolors = []
 
