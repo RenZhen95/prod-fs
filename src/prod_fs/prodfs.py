@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import combinations
@@ -142,9 +143,10 @@ class ProD():
         for y in self.y_segregatedGroup.keys():
             if self.y_segregatedGroup[y].shape[0] == 1:
                 yToRemove.append(y)
-                print(
-                    f"---\ny={y} sub-dataset has only 1 sample and will be " +
-                    "excluded ... "
+                warnings.warn(
+                    f"Class {y} contains only 1 sample and will be excluded!" +
+                    " Please proceed with caution!",
+                    UserWarning
                 )
         #  - removing class populations with only one sample
         if len(yToRemove) != 0:
@@ -185,7 +187,7 @@ class ProD():
         print(" - Kernels constructed!")
 
         # Compute intersection areas
-        _combinations = combinations(self.yLabels, self.k)
+        _combinations = combinations(list(self.y_segregatedGroup.keys()), self.k)
         c1 = []     # Holds each k-combination of classes (element, element)
         c1idx = []  # Holds each k-combination of classes (idx, idx)
         cStack = [] # Intersection areas between all k-combinations for
@@ -210,7 +212,7 @@ class ProD():
         if self.averaging_method == "mean":
             print(" - averaging_method: 'mean'")
             self.intersectionAreas = np.mean(cStack, axis=0)
-            
+
         elif self.averaging_method == "weighted":
             print(" - averaging_method: 'weighted'")
             nSamples_perClass = np.zeros((len(self.yLabels), 1))
@@ -333,7 +335,7 @@ class ProD():
         else:
             _grid = self.XGrid
 
-        for y in self.yLabels:
+        for y in list(self.y_segregatedGroup.keys()):
             if isinstance(self.bw_method, str):
                 bw = self.get_bw(
                     self.y_segregatedGroup[y][:,feat_idx], self.bw_method
@@ -422,11 +424,22 @@ class ProD():
         """
         unique_y = list(set(self.y))
 
-        _subX = defaultdict()
-        _subX_sd = defaultdict()
+        _subX      = defaultdict()
+        _subX_sd   = defaultdict()
         _subX_mean = defaultdict()
+
         for uy in unique_y:
             _subX[uy] = self.X[np.where(self.y==uy)[0], :]
+
+            # Warn user if number of samples are less than 5
+            classCount = _subX[uy].shape[0]
+            if classCount < 5:
+                warnings.warn(
+                    f"Class {uy} contains only {classCount} samples. ProD " +
+                    "recommends 5 samples per class to construct robust " +
+                    "Kernel Density Estimates. Please proceed with caution!",
+                    UserWarning
+                )
 
             # Add 'zero' to last element to allow for scipy to carry out
             # a Cholesky Decomposition on the variance matrix
