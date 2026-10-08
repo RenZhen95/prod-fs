@@ -51,25 +51,22 @@ for i in range(2):
 
 ## Citation
 
-COMING SOON ...
+If you use `prod-fs` in your research, please cite our paper:
 
-The other feature selection methods that were compared to in our paper is as listed below:
-1. LH-RELIEF: Feature weight estimation for gene selection: a local hyperlinear learning approach
-DOI: https://doi.org/10.1186/1471-2105-15-70
+> J.C. Liaw, F. Geu Flores, W. Kowalczyk. ProD: A visualizable filter-feature selection method based on “prodding” the class {Pro}bability {D}ensities for overlapping. Machine Learning with Applications 26, 101035 (2026)
 
-2. I-RELIEF: Iterative RELIEF for Feature Weighting: Algorithms, Theories, and Applications
-DOI: https://doi.org/10.1109/TPAMI.2007.1093
+Here's an example of a BibTeX entry:
 
-3. RELIEF-F: Estimating attributes: Analysis and extensions of RELIEF
-DOI: https://doi.org/10.1007/3-540-57868-4_57
-
-4. MultiSURF: Benchmarking relief-based feature selection methods for bioinformatics data mining
-DOI: https://doi.org/10.1016/j.jbi.2018.07.015
-
-5. Random Forests
-DOI: https://doi.org/10.1023/A:1010933404324
-
-6. ANOVA F-statistic: Statistical Methods for Research Workers
-
-7. Mutual Information: Estimating mutual information
-DOI: https://doi.org/10.1103/PhysRevE.69.066138
+```bibtex
+@article{liaw2026prod,
+  title   = {{ProD: A visualizable filter-feature selection method based on “prodding” the class {Pro}bability {D}ensities for overlapping}},
+  journal = {Machine Learning with Applications},
+  volume  = {26},
+  pages   = {101035},
+  year    = {2026},
+  issn    = {2666-8270},
+  doi     = {10.1016/j.mlwa.2026.101035},
+  url     = {https://doi.org/10.1016/j.mlwa.2026.101035},
+  author  = {Liaw, Jin Cheng and {Geu Flores}, Francisco and Kowalczyk, Wojciech}
+}
+```
