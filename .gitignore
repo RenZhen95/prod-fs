@@ -1,3 +1,14 @@
+# TeX metafiles
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.nav
+*.out
+*.snm
+*.toc
+
 ANOVA*
 results*
 *.pkl

@@ -1,0 +1,94 @@
+\begin{frame}{Motivation}
+  \begin{itemize}
+  \item Classification involving \emph{high-dimensional} and \emph{imbalanced} datasets is challenging
+  \item Often encountered in domains such as:
+    \begin{itemize}
+    \item Medicine \& Healthcare
+    \item Genomic Research % Genomforschung
+    \item Drug Discovery   % Arzneimittelforschung
+    \end{itemize}
+  \item Especially in applications involving high-risk decision-making, AI has still been short on delivery \cite{berisha2021}
+  % Insbesondere bei Anwendungen, bei denen risikoreiche Entscheidungen getroffen werden müssen, hat die KI bislang noch nicht die Erwartungen erfüllt
+  % Für eine ausführliche Behandlung des Themas kann ich das Paper hier empfehlen
+    \begin{itemize}
+    \item Curse of dimensionality: Few samples but high number of features \cite{berisha2021}
+    \item High degree of class imbalances (?)
+    \end{itemize}
+  \item \textbf{Feature selection:}\\Reduce dimensionality by removing irrelevant and/or redundant features
+  \end{itemize}
+
+  \begin{textblock*}{2.2cm}(13.2cm, 5.75cm)
+    \centering
+    \begin{tabular}{r}
+      {\tiny\color{udeBlue}\textbf{On challenges in}} \\ [-0.25cm]
+      {\tiny\color{udeBlue}\textbf{high-risk applications:}} \\
+      \qrcode[height=1.5cm]{https://doi.org/10.1038/s41746-021-00521-5}
+    \end{tabular}
+  \end{textblock*}
+\end{frame}
+
+\begin{frame}{Motivation -- Regarding Class Imbalance}
+  \citet{prati2004} showed that very often class imbalance has been unfairly blamed for bad performance, when (quite) often \emph{class overlapping} is a larger culprit
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \hspace{0.05em} Take the original dummy example used in \cite{prati2004}:
+      \begin{itemize}
+      \item Positive priors vary (i.e. ``height'' of the distribution curve)
+      \item Solid vertical line denotes optimal Bayes split
+      \item Distributions are Gaussian and both have the same standard deviation (SD) but:
+        \begin{itemize}
+        \item (a) Means are 1 SD apart
+        \item (b) Means are 4 SD apart
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      $\quad$ \\ [0.5cm]
+      \footnotesize Solid -- Negative Class | Dotted -- Positive Class
+      \\ [0.5cm]
+      \resizebox{\linewidth}{!}{\input{PratiPicture.pdf_tex}}
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Motivation -- Human-in-the-Loop Machine Learning}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+      \item Pure data-driven techniques are inadequate (especially for high-risk decision-making) \cite{maadi2021}
+        \begin{itemize}
+          \item Quality highly depends on input data!
+        \end{itemize}
+      \item \textbf{Human-in-the-Loop Machine Learning:}\\Human experts intervene when models fail to generalize
+        \begin{itemize}
+        \item One key factor for this approach is \emph{transparency}
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Why Another Filter Feature-Selection Method?}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textbf{Limitations of Existing Approaches:}
+      \begin{itemize}
+        \item \textbf{Opaque Metrics:} Mutual Information (bits/nats) or ReliefF weights offer little geometric intuition.
+        \item \textbf{Inductive Bias:} Hybrid methods (e.g., FeSNOC) couple feature ranking to downstream classifiers ($k$NN).
+        \item \textbf{Memory Bottlenecks:} Instance-based filters scale at $\mathcal{O}(N^2)$ memory for distance matrices.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{block}{Core Idea of ProD}
+        Evaluate each feature independently as a \textbf{pure filter} by directly measuring the geometric \textbf{Niche Overlapping Coefficient (NOC)} of its class-wise Kernel Density Estimates (KDE).
+      \end{block}
+      \vspace{0.3em}
+      \begin{itemize}
+        \item Bounded, intuitive score in $[0, 1]$
+        \item Directly visualizable for human-in-the-loop diagnostics
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
